@@ -28,17 +28,9 @@ Route::get('/nuestra-historia', function () {
     return Inertia::render('NuestraHistoria');
 })->name('nuestra.historia');
 
-/*Route::get('/nuestra-historia', function () {
-    return Inertia::render('NuestraHistoria');
-})->name('galeria');
-
-Route::get('/nuestra-historia', function () {
-    return Inertia::render('NuestraHistoria');
-})->name('boda');
-
-Route::get('/nuestra-historia', function () {
-    return Inertia::render('NuestraHistoria');
-})->name('confirmar');*/
+Route::get('/confirmar', function () {
+    return Inertia::render('ConfirmarAsistencia');
+})->name('confirmar.asistencia');
 
 
 require __DIR__.'/auth.php';

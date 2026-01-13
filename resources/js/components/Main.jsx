@@ -54,7 +54,9 @@ export default function Main() {
                 <div className="home-overlay"></div>
 
                 <div className="center-text">
-                    <p>¡Nos casamos!</p>
+                    <p>“Hay momentos en la vida que son especiales, 
+y compartirlos con las personas que quieres los convierten en inolvidables”
+</p>
                     <h1>LUCIA Y ROMAN</h1>
                     <p>11 · 07 · 26</p>
                 </div>

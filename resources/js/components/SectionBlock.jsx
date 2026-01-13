@@ -2,8 +2,10 @@
 
 export default function SectionBlock({ 
     title, 
+    place,
+    day,
     time, 
-    place, 
+    
     address, 
     mapUrl, 
     image, 
@@ -35,15 +37,15 @@ export default function SectionBlock({
 
             {/* Texto */}
             <div style={{ flex: 1, padding: '20px', textAlign: 'center' }}>
-                <h2 style={{ fontSize: '3rem', color: '#556b4e', marginBottom: '20px' }}>{title}</h2>
+                <h3 style={{ fontSize: '2rem', color: '#556b4e', marginBottom: '20px' }}>{title}</h3>
+                <p style={{ fontSize: '1.5rem',color: '#556b4e', marginBottom: '10px' }}>{place}</p>
+                <p style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{day}</p>
                 <p style={{ fontSize: '1.8rem', marginBottom: '10px' }}>{time}</p>
-                <p style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{place}</p>
-                <p style={{ fontSize: '1.2rem', marginBottom: '10px' }}>{address}</p>
                 <a 
                     href={mapUrl}
                     style={{ color: '#556b4e', textDecoration: 'underline' }}
                 >
-                    Mapa
+                    Les Moreres, La Vall d'Uixó
                 </a>
             </div>
         </div>

@@ -29,8 +29,8 @@ export default function CenteredSection({
                 {/* Línea izquierda */}
                 <div 
                     style={{
-                        width: '200px',
-                        height: '1px',
+                        width: '130px',
+                        height: '2px',
                         backgroundColor: lineColor,
                         opacity: 0.7
                     }}
@@ -39,7 +39,7 @@ export default function CenteredSection({
                 {/* Título */}
                 <h2
                     style={{
-                        fontSize: '3rem',
+                        fontSize: '1.3rem',
                         fontWeight: '300',
                         color: '#556b4e',
                         margin: 0
@@ -51,8 +51,8 @@ export default function CenteredSection({
                 {/* Línea derecha */}
                 <div 
                     style={{
-                        width: '200px',
-                        height: '1px',
+                        width: '130px',
+                        height: '2px',
                         backgroundColor: lineColor,
                         opacity: 0.7
                     }}

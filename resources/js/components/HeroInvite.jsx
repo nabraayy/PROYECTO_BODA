@@ -3,8 +3,8 @@
 import { Link } from '@inertiajs/react';
 
 export default function HeroInvite({
-    subtitle = "Acompáñanos",
-    title = "¡Esperamos que puedas acompañarnos!",
+    subtitle = "",
+    title = "",
     buttonText = "Confirmar asistencia",
     buttonLink = "/confirmar",
     backgroundImage
@@ -56,10 +56,11 @@ export default function HeroInvite({
                 {/* Texto grande */}
                 <h1
                     style={{
-                        fontSize: '3.5rem',
+                        fontSize: '2.3rem',
                         fontWeight: 300,
                         marginBottom: '40px',
-                        lineHeight: '1.2'
+                        lineHeight: '1.2',
+                        
                     }}
                 >
                     {title}
