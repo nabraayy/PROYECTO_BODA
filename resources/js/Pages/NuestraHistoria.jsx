@@ -36,8 +36,6 @@ export default function NuestraHistoria() {
                 }}
             />
         </div>
-
-            {/* HISTORIA: IMAGEN + TEXTO */}
             <div
                 style={{
                     backgroundColor: '#dce6d4',
@@ -47,7 +45,6 @@ export default function NuestraHistoria() {
                     alignItems: 'center'
                 }}
             >
-                {/* Imagen */}
                 <div style={{ flex: 1 }}>
                     <img
                         src="/boda_lucia/2.jpeg"
@@ -62,23 +59,23 @@ export default function NuestraHistoria() {
 
                 {/* Texto */}
                 <div className="flex-1">
-    <h2 className="font-serif text-[2.6rem] md:text-[3rem] font-light text-[#6f7f60] mb-8 tracking-wide">
-        Lucía & Román
-    </h2>
+                    <h2 className="font-serif text-[2.6rem] md:text-[3rem] font-light text-[#6f7f60] mb-8 tracking-wide">
+                        Lucía & Román
+                    </h2>
 
-    <div className="w-24 h-px bg-black opacity-60 mb-8" />
+                    <div className="w-24 h-px bg-black opacity-60 mb-8" />
 
-    <p className="text-[1.1rem] md:text-[1.2rem] leading-relaxed text-black max-w-xl">
-        Una sesión de embarazo que terminó convirtiéndose en una pedida de mano.
-        El mejor verano de nuestras vidas. Menorca. Una cala grabada a fuego en
-        nuestra memoria: <span className="italic">Sa Mesquida</span>. Tú, yo y una
-        bebé en camino.
-        <br /><br />
-        No había duda de que era el momento ideal para que Román hincara rodilla.
-        <br /><br />
-        Os dejamos algunas fotos para que podáis ver parte de ese momentazo.
-    </p>
-</div>
+                    <p className="text-[1.1rem] md:text-[1.2rem] leading-relaxed text-black max-w-xl">
+                        Una sesión de embarazo que terminó convirtiéndose en una pedida de mano.
+                        El mejor verano de nuestras vidas. Menorca. Una cala grabada a fuego en
+                        nuestra memoria: <span className="italic">Sa Mesquida</span>. Tú, yo y una
+                        bebé en camino.
+                        <br /><br />
+                        No había duda de que era el momento ideal para que Román hincara rodilla.
+                        <br /><br />
+                        Os dejamos algunas fotos para que podáis ver parte de ese momentazo.
+                    </p>
+                </div>
 
             </div>
 

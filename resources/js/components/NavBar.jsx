@@ -24,7 +24,7 @@ export default function NavBar() {
 
     return (
         <>
-            {/* NAVBAR CSS */}
+           
             <style>
                 {`
                     .header {
@@ -84,6 +84,13 @@ export default function NavBar() {
                     >
                         Nuestra historia
                     </Link>
+                    <Link
+                        href="/galeria"
+                        style={isActive('/galeria') ? activeStyle : {}}
+                    >
+                        Galeria
+                    </Link>
+                    
 
                 </nav>
 

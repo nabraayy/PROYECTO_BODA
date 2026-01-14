@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\GaleriaController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -29,8 +30,10 @@ Route::get('/nuestra-historia', function () {
 })->name('nuestra.historia');
 
 Route::get('/confirmar', function () {
-    return Inertia::render('ConfirmarAsistencia');
+    return Inertia::render('Confirmacion');
 })->name('confirmar.asistencia');
 
+Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
+Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
 
 require __DIR__.'/auth.php';
