@@ -1,5 +1,4 @@
 // resources/js/Components/CenteredSection.jsx
-
 import { Link } from '@inertiajs/react';
 
 export default function CenteredSection({
@@ -10,73 +9,42 @@ export default function CenteredSection({
     lineColor = '#9aaa8a'
 }) {
     return (
-        <div
-            style={{
-                backgroundColor: backgroundColor,
-                padding: '100px 20px',
-                textAlign: 'center'
-            }}
+        <section
+            style={{ backgroundColor }}
+            className="py-24 px-6 text-center"
         >
-            {/* Líneas decorativas + texto */}
-            <div 
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '40px'
-                }}
-            >
-                {/* Línea izquierda */}
-                <div 
-                    style={{
-                        width: '130px',
-                        height: '2px',
-                        backgroundColor: lineColor,
-                        opacity: 0.7
-                    }}
-                />
+            {/* Contenido centrado */}
+            <div className="max-w-4xl mx-auto">
+                
+                {/* Líneas + texto */}
+                <div className="flex items-center justify-center gap-6 md:gap-10 mb-12">
+                    <span
+                        className="hidden sm:block h-px w-24 opacity-70"
+                        style={{ backgroundColor: lineColor }}
+                    />
 
-                {/* Título */}
-                <h2
-                    style={{
-                        fontSize: '1.3rem',
-                        fontWeight: '300',
-                        color: '#556b4e',
-                        margin: 0
-                    }}
-                >
-                    {title}
-                </h2>
+                    <h2
+                        className="font-serif text-lg md:text-xl font-light leading-relaxed text-[#556b4e]"
+                    >
+                        {title}
+                    </h2>
 
-                {/* Línea derecha */}
-                <div 
-                    style={{
-                        width: '130px',
-                        height: '2px',
-                        backgroundColor: lineColor,
-                        opacity: 0.7
-                    }}
-                />
+                    <span
+                        className="hidden sm:block h-px w-24 opacity-70"
+                        style={{ backgroundColor: lineColor }}
+                    />
+                </div>
+
+                {/* Botón */}
+                {buttonText && (
+                    <Link
+                        href={buttonLink}
+                        className="inline-block bg-[#6f7f60] text-white text-lg font-light px-10 py-4 tracking-wide transition-all duration-300 hover:bg-[#5f6f52]"
+                    >
+                        {buttonText}
+                    </Link>
+                )}
             </div>
-
-            {/* Botón */}
-            <div style={{ marginTop: '40px' }}>
-                <Link
-                    href={buttonLink}
-                    style={{
-                        backgroundColor: '#6f7f60',
-                        padding: '14px 40px',
-                        color: 'white',
-                        fontSize: '1.2rem',
-                        textDecoration: 'none',
-                        display: 'inline-block',
-                        borderRadius: '2px',
-                        fontWeight: '300'
-                    }}
-                >
-                    {buttonText}
-                </Link>
-            </div>
-        </div>
+        </section>
     );
 }

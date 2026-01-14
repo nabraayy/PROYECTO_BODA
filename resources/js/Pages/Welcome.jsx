@@ -36,10 +36,32 @@ export default function Welcome({ auth }) {
                 backgroundImage="/boda_lucia/6.jpeg"
             />
 
-             <div style={{ flex: 1, padding: '20px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '2rem', color: '#556b4e', marginBottom: '20px' }}>hola</h3>
+            
                 
-            </div>
+            <section className="py-20 px-6 bg-white">
+    <div className="max-w-3xl mx-auto text-center">
+        <h2 className="text-3xl font-serif mb-6">
+            Un pequeño detalle
+        </h2>
+
+        <p className="mb-8 text-gray-700 leading-relaxed">
+            Lo más importante es tu presencia, pero si quieres sumarle un extra a nuestra felicidad, os dejamos nuestro número de cuenta: 
+        </p>
+
+        <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+            <p className="font-semibold mb-2">Cuenta bancaria (IBAN)</p>
+            <p className="tracking-widest text-lg mb-4">
+               ES68 0081 0243 5300 0644 4757
+            </p>
+
+        </div>
+
+        <p className="mt-10 italic text-gray-600">
+            Gracias de corazón por acompañarnos y formar parte de este momento tan especial.
+        </p>
+    </div>
+</section>
+
             
             <Footer />
 

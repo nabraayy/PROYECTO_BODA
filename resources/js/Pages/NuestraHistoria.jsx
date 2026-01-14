@@ -6,99 +6,36 @@ export default function NuestraHistoria() {
     return (
         <div>
             <NavBar />
+            <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
+                <div className="max-w-4xl mx-auto">
+                    <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">
+                        Nuestra historia
+                    </span>
 
-            {/* HERO SUPERIOR */}
-            <div
-    style={{
-        backgroundColor: '#dce6d4',
-        padding: '120px 20px 80px', // extra arriba por el navbar fixed
-        textAlign: 'center'
-    }}
->
-    <h1
-        style={{
-            fontSize: '3.5rem',
-            fontWeight: 300,
-            color: '#556b4e',
-            margin: 0
-        }}
-    >
-        Cómo empezó todo
-    </h1>
-</div>
-<div
-    style={{
-        width: '100%',
-        overflow: 'hidden'
-    }}
->
-    <img
-        src="/boda_lucia/1.jpeg"  // <-- cambia la foto
-        alt="Nuestra historia"
-        style={{
-            width: '100%',
-            height: 'auto',
-            display: 'block'
-        }}
-    />
-</div>
+                    <h1 className="font-serif text-[2.8rem] md:text-[3.5rem] font-light text-[#556b4e] leading-tight">
+                        Cómo empezó todo
+                    </h1>
 
-            {/* FRASES / TESTIMONIOS */}
-            <div
+                    <div className="mx-auto mt-10 h-px w-32 bg-[#9aaa8a] opacity-70" />
+                </div>
+            </section>
+
+        <div
+            style={{
+                width: '100%',
+                overflow: 'hidden'
+            }}
+        >
+            <img
+                src="/boda_lucia/cala.png"  
+                alt="Nuestra historia"
                 style={{
-                    backgroundColor: '#dce6d4',
-                    padding: '80px 40px',
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '60px'
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block'
                 }}
-            >
-                {/* Testimonio 1 */}
-                <div>
-                    <p
-                        style={{
-                            fontSize: '2rem',
-                            fontWeight: 300,
-                            color: '#556b4e',
-                            lineHeight: 1.4
-                        }}
-                    >
-                        “La vi al otro lado del bar y no pude dejar de mirarla hasta que me animé a hablarle.”
-                    </p>
-                    <p
-                        style={{
-                            fontSize: '1rem',
-                            marginTop: '10px',
-                            color: '#556b4e'
-                        }}
-                    >
-                        — Antoine
-                    </p>
-                </div>
-
-                {/* Testimonio 2 */}
-                <div>
-                    <p
-                        style={{
-                            fontSize: '2rem',
-                            fontWeight: 300,
-                            color: '#556b4e',
-                            lineHeight: 1.4
-                        }}
-                    >
-                        “Hicimos contacto visual en un momento y me hipnotizó esa sonrisa adictiva que tiene.”
-                    </p>
-                    <p
-                        style={{
-                            fontSize: '1rem',
-                            marginTop: '10px',
-                            color: '#556b4e'
-                        }}
-                    >
-                        — Soria
-                    </p>
-                </div>
-            </div>
+            />
+        </div>
 
             {/* HISTORIA: IMAGEN + TEXTO */}
             <div
@@ -124,61 +61,29 @@ export default function NuestraHistoria() {
                 </div>
 
                 {/* Texto */}
-                <div style={{ flex: 1 }}>
-                    <h2
-                        style={{
-                            fontSize: '3rem',
-                            fontWeight: 300,
-                            color: 'white',
-                            marginBottom: '20px'
-                        }}
-                    >
-                        LUCIA Y ROMÁN
-                    </h2>
+                <div className="flex-1">
+    <h2 className="font-serif text-[2.6rem] md:text-[3rem] font-light text-[#6f7f60] mb-8 tracking-wide">
+        Lucía & Román
+    </h2>
 
-                    <p
-                        style={{
-                            fontSize: '1.2rem',
-                            lineHeight: 1.7,
-                            color: '#33452f'
-                        }}
-                    >
-                        Soria y Antoine se conocieron en una salida con sus respectivos amigos a un bar de Phoenix. 
-                        Después de que se llamaran la atención mutuamente en el bar y de que pasaron el resto de la 
-                        noche descubriendo que tenían mucho en común, empezaron a salir. Dos años más tarde, somos 
-                        mejores amigos, un amor verdadero y excelentes compañeros de vida.  
-                        ¡Por fin estamos listos para hacerlo oficial!
-                    </p>
-                </div>
+    <div className="w-24 h-px bg-black opacity-60 mb-8" />
+
+    <p className="text-[1.1rem] md:text-[1.2rem] leading-relaxed text-black max-w-xl">
+        Una sesión de embarazo que terminó convirtiéndose en una pedida de mano.
+        El mejor verano de nuestras vidas. Menorca. Una cala grabada a fuego en
+        nuestra memoria: <span className="italic">Sa Mesquida</span>. Tú, yo y una
+        bebé en camino.
+        <br /><br />
+        No había duda de que era el momento ideal para que Román hincara rodilla.
+        <br /><br />
+        Os dejamos algunas fotos para que podáis ver parte de ese momentazo.
+    </p>
+</div>
+
             </div>
 
             {/* SECCIÓN FINAL */}
             <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-                
-                <h2
-                    style={{
-                        fontSize: '3rem',
-                        fontWeight: 300,
-                        color: '#556b4e',
-                        marginBottom: '20px'
-                    }}
-                >
-                    El resto es historia conocida
-                </h2>
-
-                <p
-                    style={{
-                        maxWidth: '800px',
-                        margin: '0 auto 60px auto',
-                        fontSize: '1.2rem',
-                        color: '#556b4e',
-                        lineHeight: 1.7
-                    }}
-                >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 
-                    et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud.
-                </p>
-
                 {/* GALERÍA 3 FOTOS */}
                 <GallerySlider
                     images={[
