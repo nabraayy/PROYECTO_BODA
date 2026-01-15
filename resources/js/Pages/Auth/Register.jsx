@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-
+import NavBar from '@/Components/NavBar';
 export default function Register({ auth }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
@@ -154,29 +154,7 @@ export default function Register({ auth }) {
             <div className="page-container">
                 <div className="overlay"></div>
 
-                <header className="header">
-
-                    <nav className="header-links">
-                        <a href="/">Inicio</a>
-                        <a href="#">Galería</a>
-                        <a href="#">Nuestra historia</a>
-                        <a href="#">La boda</a>
-                    </nav>
-
-                    <div className="logo">
-                        <h2 style={{ margin: 0, color: 'white', fontFamily: 'Copperplate' }}>
-                            L&R 11/07/2026
-                        </h2>
-                    </div>
-
-                    <div className="header-buttons">
-                        <Link href={route('login')}>Iniciar sesión</Link>
-                        <a href="/confirmar" className="confirm-btn">
-                            Confirmar asistencia
-                        </a>
-                    </div>
-                </header>
-
+                <NavBar auth={auth} />
                 <div className="register-wrapper">
                     <div className="register-card">
                         <h1 className="register-title">Crear cuenta</h1>

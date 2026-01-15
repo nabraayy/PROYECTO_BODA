@@ -50,7 +50,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         <div>
             <NavBar />
 
-            {/* CABECERA */}
+            
             <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
                 <div className="max-w-4xl mx-auto">
                     <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">
@@ -63,7 +63,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {/* SUBIDA */}
+            
             {auth?.user && (
                 <section style={{ backgroundColor: '#f5f7f3', padding: '80px 20px' }}>
                     <div style={{
@@ -101,7 +101,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </section>
             )}
 
-            {/* GALERÍA TIPO SQUARESPACE */}
+           
             <section style={{ backgroundColor: '#dce6d4', padding: '100px 20px' }}>
                 <div style={{
                     maxWidth: '1200px',
@@ -165,7 +165,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {/* MODAL */}
+            
             {modalItem && (
                 <div onClick={() => setModalItem(null)} style={{
                     position: 'fixed',

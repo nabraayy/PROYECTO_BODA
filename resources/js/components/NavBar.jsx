@@ -72,29 +72,40 @@ export default function NavBar() {
                 `}
             </style>
 
-            {/* NAV STRUCTURE */}
+            
             <header className={`header ${scrolled ? "scrolled" : ""}`}>
 
-                {/* LEFT NAV LINKS */}
+                
                 <nav className="header-links">
-
-                    <Link
-                        href="/nuestra-historia"
-                        style={isActive('/nuestra-historia') ? activeStyle : {}}
-                    >
-                        Nuestra historia
-                    </Link>
-                    <Link
-                        href="/galeria"
-                        style={isActive('/galeria') ? activeStyle : {}}
-                    >
-                        Galeria
-                    </Link>
+                    {auth.user ? (
+                        <>
+                         <Link
+                            href="/nuestra-historia"
+                            style={isActive('/nuestra-historia') ? activeStyle : {}}
+                        >
+                            Nuestra historia
+                        </Link>
+                        <Link
+                            href="/galeria"
+                            style={isActive('/galeria') ? activeStyle : {}}
+                        >
+                            Galeria
+                        </Link>
+                    </>
+                    ) : (
+                        <>
+                            <Link
+                                href="/nuestra-historia"
+                                style={isActive('/nuestra-historia') ? activeStyle : {}}
+                            >
+                                Nuestra historia
+                            </Link>
+                        </>
+                    )}
                     
-
                 </nav>
 
-                {/* LOGO CENTER */}
+                
                 <div className="logo">
                     <h2
                         style={{
@@ -108,7 +119,7 @@ export default function NavBar() {
                     </h2>
                 </div>
 
-                {/* RIGHT BUTTONS */}
+                
                 <div className="header-buttons">
                     {auth.user ? (
                         <Link href={route("dashboard")}>Dashboard</Link>

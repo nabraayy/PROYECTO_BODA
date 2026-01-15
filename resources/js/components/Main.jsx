@@ -55,8 +55,8 @@ export default function Main() {
 
                 <div className="center-text">
                     <p>“Hay momentos en la vida que son especiales, 
-y compartirlos con las personas que quieres los convierten en inolvidables”
-</p>
+                        y compartirlos con las personas que quieres los convierten en inolvidables”
+                    </p>
                     <h1>LUCIA Y ROMAN</h1>
                     <p>11 · 07 · 26</p>
                 </div>

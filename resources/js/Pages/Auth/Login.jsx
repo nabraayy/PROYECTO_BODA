@@ -1,3 +1,4 @@
+import NavBar from '@/components/NavBar';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
@@ -151,31 +152,7 @@ export default function Login({ status, canResetPassword }) {
             <div className="page-container">
                 <div className="overlay"></div>
 
-                {/* HEADER */}
-                <header className="header">
-                    {/* MENÚ */}
-                    <nav className="header-links">
-                        <a href="/">Inicio</a>
-                        <a href="#">Galería</a>
-                        <a href="#">Nuestra historia</a>
-                        <a href="#">La boda</a>
-                    </nav>
-
-                    {/* LOGO — personalizado */}
-                    <div className="logo">
-                        <h2 style={{ margin: 0, color: 'white', fontFamily: 'Copperplate' }}>
-                            L&R 11/07/2026
-                        </h2>
-                    </div>
-
-                    {/* BOTONES HEADER */}
-                    <div className="header-buttons">
-                        <Link href={route('register')}>Registrarse</Link>
-                        <a href="/confirmar" className="confirm-btn">Confirmar asistencia</a>
-                    </div>
-                </header>
-
-                {/* LOGIN FORM */}
+                <NavBar />
                 <div className="login-wrapper">
                     <div className="login-card">
                         <h1 className="login-title">Iniciar sesión</h1>

@@ -37,30 +37,39 @@ export default function Welcome({ auth }) {
             />
 
             
-                
-            <section className="py-20 px-6 bg-white">
-    <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-3xl font-serif mb-6">
-            Un pequeño detalle
-        </h2>
+             {auth.user ? (
+                        <section className="py-20 px-6 bg-white">
+                            <div className="max-w-3xl mx-auto text-center">
+                                <h2 className="text-3xl font-serif mb-6">
+                                    Un pequeño detalle
+                                </h2>
 
-        <p className="mb-8 text-gray-700 leading-relaxed">
-            Lo más importante es tu presencia, pero si quieres sumarle un extra a nuestra felicidad, os dejamos nuestro número de cuenta: 
-        </p>
+                                <p className="mb-8 text-gray-700 leading-relaxed">
+                                    Lo más importante es tu presencia, pero si quieres sumarle un extra a nuestra felicidad, os dejamos nuestro número de cuenta: 
+                                </p>
 
-        <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
-            <p className="font-semibold mb-2">Cuenta bancaria (IBAN)</p>
-            <p className="tracking-widest text-lg mb-4">
-               ES68 0081 0243 5300 0644 4757
-            </p>
+                                <div className="border border-gray-200 rounded-lg p-6 bg-gray-50">
+                                    <p className="font-semibold mb-2">Cuenta bancaria (IBAN)</p>
+                                    <p className="tracking-widest text-lg mb-4">
+                                    ES68 0081 0243 5300 0644 4757
+                                    </p>
 
-        </div>
+                                </div>
 
-        <p className="mt-10 italic text-gray-600">
-            Gracias de corazón por acompañarnos y formar parte de este momento tan especial.
-        </p>
-    </div>
-</section>
+                                <p className="mt-10 italic text-gray-600">
+                                    Gracias de corazón por acompañarnos y formar parte de este momento tan especial.
+                                </p>
+                            </div>
+                        </section>
+                    ) : (
+                        <>
+                            <p className="mt-10 italic text-gray-600 text-center px-6">
+                                Gracias de corazón por acompañarnos y formar parte de este momento tan especial si decides hacerlo.
+                            </p>
+                            
+                        </>
+                    )}   
+            
 
             
             <Footer />

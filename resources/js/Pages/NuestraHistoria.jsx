@@ -79,9 +79,9 @@ export default function NuestraHistoria() {
 
             </div>
 
-            {/* SECCIÓN FINAL */}
+            
             <div style={{ padding: '80px 40px', textAlign: 'center' }}>
-                {/* GALERÍA 3 FOTOS */}
+                
                 <GallerySlider
                     images={[
                         "/boda_lucia/2.jpeg",
