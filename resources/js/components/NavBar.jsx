@@ -24,7 +24,6 @@ export default function NavBar() {
 
     return (
         <>
-           
             <style>
                 {`
                     .header {
@@ -69,29 +68,43 @@ export default function NavBar() {
                         background-color: #6f8352;
                         border: none !important;
                     }
+                        .logout-btn {
+                        padding: 10px 18px;
+                        border: 1px solid white;
+                        border-radius: 3px;
+                        color: white;
+                        background-color: transparent;
+                        text-decoration: none;
+                        cursor: pointer;
+                        font-weight: 500;
+                    }
+
+                    .logout-btn:hover {
+                        background-color: #6f8352;
+                        color: white;
+                    }
                 `}
             </style>
 
-            
             <header className={`header ${scrolled ? "scrolled" : ""}`}>
 
-                
+                {/* Menú de navegación */}
                 <nav className="header-links">
                     {auth.user ? (
                         <>
-                         <Link
-                            href="/nuestra-historia"
-                            style={isActive('/nuestra-historia') ? activeStyle : {}}
-                        >
-                            Nuestra historia
-                        </Link>
-                        <Link
-                            href="/galeria"
-                            style={isActive('/galeria') ? activeStyle : {}}
-                        >
-                            Galeria
-                        </Link>
-                    </>
+                            <Link
+                                href="/nuestra-historia"
+                                style={isActive('/nuestra-historia') ? activeStyle : {}}
+                            >
+                                Nuestra historia
+                            </Link>
+                            <Link
+                                href="/galeria"
+                                style={isActive('/galeria') ? activeStyle : {}}
+                            >
+                                Galeria
+                            </Link>
+                        </>
                     ) : (
                         <>
                             <Link
@@ -102,10 +115,9 @@ export default function NavBar() {
                             </Link>
                         </>
                     )}
-                    
                 </nav>
 
-                
+                {/* Logo */}
                 <div className="logo">
                     <h2
                         style={{
@@ -115,23 +127,26 @@ export default function NavBar() {
                             fontSize: "2rem",
                         }}
                     >
-                       <Link href="/" >L&R 11/07/2026</Link>
+                        <Link href="/">L&R 11/07/2026</Link>
                     </h2>
                 </div>
 
-                
+                {/* Botones del header */}
                 <div className="header-buttons">
                     {auth.user ? (
-                        <Link href={route("dashboard")}>Dashboard</Link>
+                        // Si el usuario es admin, mostrar el botón de Dashboard
+                        auth.user.role === 'admin' ? (
+                            <Link href={route("dashboard")}>Dashboard</Link>
+                        ) : (
+                           <Link  href={route('logout')} method="post" as="button"className="logout-btn">Logout</Link>
+                        )
                     ) : (
-                        <>
-                            <Link href={route("login")}>Iniciar sesión</Link>
-                            
-                        </>
+                        // Si no hay usuario autenticado, mostrar el botón de login
+                        <Link href={route("login")}>Iniciar sesión</Link>
                     )}
                     <a href="/confirmar" className="confirm-btn">
-                            Confirmar asistencia
-                        </a>
+                        Confirmar asistencia
+                    </a>
                 </div>
             </header>
         </>

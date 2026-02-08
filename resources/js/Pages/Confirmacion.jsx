@@ -1,6 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
 import NavBar from '@/Components/NavBar';
 import Footer from '@/Components/Footer';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 export default function Confirmacion() {
     const { data, setData, post, processing, reset } = useForm({
@@ -10,11 +13,18 @@ export default function Confirmacion() {
         intolerancias: '',
         mensaje: '',
     });
+    
 
     const submit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
         post('/confirmar-asistencia', {
-            onSuccess: () => reset(),
+            onSuccess: () => {
+                reset(); // Restablecer los campos del formulario
+                toast.success('Confirmación enviada exitosamente'); // Mostrar el popup de confirmación
+            },
+            onError: () => {
+                toast.error('Hubo un error al enviar la confirmación'); // Mostrar un mensaje de error si algo falla
+            }
         });
     };
 
@@ -22,6 +32,7 @@ export default function Confirmacion() {
         <>
             <Head title="Confirmar asistencia" />
             <NavBar />
+            
 
             <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
                 <div className="max-w-4xl mx-auto">
@@ -43,7 +54,6 @@ export default function Confirmacion() {
                         onSubmit={submit}
                         className="bg-white shadow-sm rounded-lg p-8"
                     >
-                       
                         <div className="mb-6">
                             <label className="block mb-2 text-[#556b4e]">
                                 Nombre y apellidos
@@ -57,7 +67,6 @@ export default function Confirmacion() {
                             />
                         </div>
 
-                        
                         <div className="mb-6">
                             <label className="block mb-2 text-[#556b4e]">
                                 ¿Asistirás a la boda?
@@ -66,8 +75,6 @@ export default function Confirmacion() {
                                 value={data.asistencia}
                                 onChange={e => {
                                     setData('asistencia', e.target.value);
-
-                                   
                                     if (e.target.value === 'no') {
                                         setData({
                                             ...data,
@@ -86,10 +93,8 @@ export default function Confirmacion() {
                             </select>
                         </div>
 
-                        
                         {data.asistencia === 'si' && (
                             <>
-                            
                                 <div className="mb-6">
                                     <label className="block mb-2 text-[#556b4e]">
                                         Número de asistentes
@@ -104,7 +109,6 @@ export default function Confirmacion() {
                                     />
                                 </div>
 
-                                
                                 <div className="mb-8">
                                     <label className="block mb-2 text-[#556b4e]">
                                         ¿Tienes alguna intolerancia o restricción alimentaria?
@@ -123,7 +127,6 @@ export default function Confirmacion() {
                             </>
                         )}
 
-                        
                         <div className="mb-8">
                             <label className="block mb-2 text-[#556b4e]">
                                 ¿Quieres dejarnos un mensaje?
@@ -136,7 +139,6 @@ export default function Confirmacion() {
                             />
                         </div>
 
-                        
                         <button
                             type="submit"
                             disabled={processing}
@@ -147,8 +149,7 @@ export default function Confirmacion() {
                     </form>
                 </div>
             </section>
-
-
+            <ToastContainer />
             <Footer />
         </>
     );
