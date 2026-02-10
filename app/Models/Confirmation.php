@@ -20,4 +20,8 @@ class Confirmation extends Model
         'intolerancias',
         'mensaje',
     ];
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

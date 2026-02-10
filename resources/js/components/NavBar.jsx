@@ -5,6 +5,8 @@ export default function NavBar() {
     const { url, props } = usePage();
     const auth = props.auth ?? {};
     const [scrolled, setScrolled] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+
 
     // Detecta scroll para cambiar el fondo del navbar
     useEffect(() => {
@@ -27,128 +29,144 @@ export default function NavBar() {
             <style>
                 {`
                     .header {
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        padding: 25px 60px;
-                        font-size: 16px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 20px 40px;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 999;
+    background-color: transparent;
+    transition: background-color 0.3s ease;
+}
 
-                        position: fixed;
-                        top: 0;
-                        width: 100%;
-                        z-index: 999;
+.header.scrolled {
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+}
 
-                        background-color: transparent;
-                        transition: background-color 0.3s ease, padding 0.3s ease;
-                    }
+/* IZQUIERDA */
+.header-left {
+    display: flex;
+    gap: 25px;
+}
 
-                    .header.scrolled {
-                        background-color: rgba(0, 0, 0, 0.75);
-                        backdrop-filter: blur(4px);
-                        padding: 18px 60px;
-                    }
+.header-left a {
+    color: white;
+    text-decoration: none;
+    font-weight: 300;
+}
 
-                    .header-links a {
-                        margin-right: 25px;
-                        text-decoration: none;
-                        color: white;
-                        font-weight: 300;
-                    }
+/* CENTRO */
+.header-center h2 {
+    margin: 0;
+    font-family: Copperplate;
+    font-size: 1.9rem;
+    text-align: center;
+}
 
-                    .header-buttons a {
-                        margin-left: 18px;
-                        padding: 10px 18px;
-                        border: 1px solid white;
-                        border-radius: 3px;
-                        color: white;
-                        text-decoration: none;
-                    }
+.header-center a {
+    color: white;
+    text-decoration: none;
+}
 
-                    .confirm-btn {
-                        background-color: #6f8352;
-                        border: none !important;
-                    }
-                        .logout-btn {
-                        padding: 10px 18px;
-                        border: 1px solid white;
-                        border-radius: 3px;
-                        color: white;
-                        background-color: transparent;
-                        text-decoration: none;
-                        cursor: pointer;
-                        font-weight: 500;
-                    }
+/* DERECHA */
+.header-right {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
 
-                    .logout-btn:hover {
-                        background-color: #6f8352;
-                        color: white;
-                    }
+.header-right a,
+.logout-btn {
+    color: white;
+    text-decoration: none;
+    padding: 10px 18px;
+    border: 1px solid white;
+    border-radius: 3px;
+    font-weight: 400;
+}
+
+.confirm-btn {
+    background-color: #6f8352;
+    border: none;
+}
+
+.logout-btn {
+    background: transparent;
+    cursor: pointer;
+}
+
+.logout-btn:hover,
+.confirm-btn:hover {
+    background-color: #5f6f52;
+}
+
+
+@media (max-width: 900px) {
+    .header {
+        grid-template-columns: 1fr auto;
+    }
+
+    .header-left,
+    .header-right {
+        display: none;
+    }
+
+    .header-center {
+        justify-self: center;
+    }
+}
+
                 `}
             </style>
 
-            <header className={`header ${scrolled ? "scrolled" : ""}`}>
+           <header className={`header ${scrolled ? "scrolled" : ""}`}>
 
-                {/* Menú de navegación */}
-                <nav className="header-links">
-                    {auth.user ? (
-                        <>
-                            <Link
-                                href="/nuestra-historia"
-                                style={isActive('/nuestra-historia') ? activeStyle : {}}
-                            >
-                                Nuestra historia
-                            </Link>
-                            <Link
-                                href="/galeria"
-                                style={isActive('/galeria') ? activeStyle : {}}
-                            >
-                                Galeria
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link
-                                href="/nuestra-historia"
-                                style={isActive('/nuestra-historia') ? activeStyle : {}}
-                            >
-                                Nuestra historia
-                            </Link>
-                        </>
-                    )}
-                </nav>
+    {/* IZQUIERDA: enlaces */}
+    {auth.user ? (
+        <div className="header-left">
+            <Link href="/nuestra-historia">Nuestra historia</Link>
+            <Link href="/galeria">Galería</Link>
+        </div>
+    ) :  <div className="header-left">
+            <Link href="/nuestra-historia">Nuestra historia</Link>
+        </div>}
 
-                {/* Logo */}
-                <div className="logo">
-                    <h2
-                        style={{
-                            margin: 0,
-                            color: "white",
-                            fontFamily: "Copperplate",
-                            fontSize: "2rem",
-                        }}
-                    >
-                        <Link href="/">L&R 11/07/2026</Link>
-                    </h2>
-                </div>
+    {/* CENTRO: logo */}
+    <div className="header-center">
+        <h2>
+            <Link href="/">L&R 11/07/2026</Link>
+        </h2>
+    </div>
 
-                {/* Botones del header */}
-                <div className="header-buttons">
-                    {auth.user ? (
-                        // Si el usuario es admin, mostrar el botón de Dashboard
-                        auth.user.role === 'admin' ? (
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                        ) : (
-                           <Link  href={route('logout')} method="post" as="button"className="logout-btn">Logout</Link>
-                        )
-                    ) : (
-                        // Si no hay usuario autenticado, mostrar el botón de login
-                        <Link href={route("login")}>Iniciar sesión</Link>
-                    )}
-                    <a href="/confirmar" className="confirm-btn">
-                        Confirmar asistencia
-                    </a>
-                </div>
-            </header>
+    {/* DERECHA: botones */}
+    <div className="header-right">
+        {auth.user ? (
+            auth.user.role === 'admin' ? (
+                <Link href={route("dashboard")}>Dashboard</Link>
+            ) : (
+                <Link
+                    href={route('logout')}
+                    method="post"
+                    as="button"
+                    className="logout-btn"
+                >
+                    Logout
+                </Link>
+            )
+        ) : (
+            <Link href={route("login")}>Iniciar sesión</Link>
+        )}
+
+        <Link href="/confirmar" className="confirm-btn">
+            Confirmar asistencia
+        </Link>
+    </div>
+
+</header>
+
         </>
     );
 }

@@ -7,29 +7,31 @@ use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    
-   
+public function index()
+{
+    $confirmed = Confirmation::with('user')
+        ->where('asistencia', 'si')
+        ->get();
 
-    
-    public function index()
-    {
-        
-        $confirmations = Confirmation::all();
+    $notConfirmed = Confirmation::with('user')
+        ->where('asistencia', 'no')
+        ->get();
 
-        if ($confirmations->isEmpty()) {
-            return Inertia::render('Dashboard', [
-                'confirmed' => [],  
-                'notConfirmed' => [],
-            ]);
-        }
+    return Inertia::render('Dashboard', [
+        'confirmed' => $confirmed,
+        'notConfirmed' => $notConfirmed,
+        'stats' => [
+            'total' => Confirmation::count(),
+            'yes' => $confirmed->count(),
+            'no' => $notConfirmed->count(),
+            'intolerances' => Confirmation::whereNotNull('intolerancias')
+                ->where('intolerancias', '!=', '')
+                ->count(),
+            'guests' => Confirmation::where('asistencia', 'si')->sum('asistentes'),
+        ],
+    ]);
+}
 
-        $confirmed = $confirmations->where('asistencia', 'si');
-        $notConfirmed = $confirmations->where('asistencia', 'no');
 
-        return Inertia::render('Dashboard', [
-            'confirmed' => $confirmed,   
-            'notConfirmed' => $notConfirmed,  
-        ]);
-    }
 
 }
