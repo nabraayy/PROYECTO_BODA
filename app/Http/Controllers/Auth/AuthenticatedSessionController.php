@@ -33,14 +33,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // Redirigir al dashboard si el usuario es admin, o a welcome si es un usuario normal
         $user = Auth::user();
         if ($user->isAdmin()) {
-            // Si es administrador, redirigir al dashboard
             return redirect()->route('dashboard');
         }
 
-        // Si no es admin (es un usuario normal), redirigir a welcome
         return redirect()->route('welcome');
     }
 

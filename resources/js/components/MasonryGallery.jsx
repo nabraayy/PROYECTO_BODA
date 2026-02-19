@@ -1,138 +1,61 @@
-import { useState } from 'react';
-import { useState, useEffect } from 'react';
+const images = [
+  "/boda_lucia/Galeria/240822.0002.jpg",
+  "/boda_lucia/Galeria/240822.0013.jpg",
+  "/boda_lucia/Galeria/240822.0014.jpg",
+  "/boda_lucia/Galeria/240822.0053.jpg",
+  "/boda_lucia/Galeria/240822.0021.jpg",
+  "/boda_lucia/Galeria/240822.0057.jpg",
 
-function useColumns() {
-    const [columns, setColumns] = useState(3);
+  "/boda_lucia/Galeria/240822.0108.jpg",
+  "/boda_lucia/Galeria/240822.0109.jpg",
+  "/boda_lucia/Galeria/240822.0111.jpg",
+  "/boda_lucia/Galeria/240822.0146.jpg",
+  "/boda_lucia/Galeria/240822.0150.jpg",
+  "/boda_lucia/Galeria/240822.0153.jpg",
 
-    useEffect(() => {
-        const updateColumns = () => {
-            if (window.innerWidth < 640) {
-                setColumns(1);
-            } else if (window.innerWidth < 1024) {
-                setColumns(2);
-            } else {
-                setColumns(3);
+  "/boda_lucia/Galeria/240822.0158.jpg",
+  "/boda_lucia/Galeria/240822.0167.jpg",
+  "/boda_lucia/Galeria/240822.0225.jpg",
+];
+
+export default function Gallery() {
+  return (
+    <section className="gallery">
+        <style>{`
+          .gallery {
+            column-count: 4;
+            column-gap: 1.2rem;
+            padding: 1rem;
             }
-        };
 
-        updateColumns(); // al montar
-        window.addEventListener('resize', updateColumns);
+            .gallery img {
+            width: 100%;
+            margin-bottom: 1.2rem;
+            border-radius: 6px;
+            break-inside: avoid;
+            transition: transform 0.3s ease;
+            }
 
-        return () => window.removeEventListener('resize', updateColumns);
-    }, []);
+            .gallery img:hover {
+            transform: scale(1.02);
+            }
 
-    return columns;
-}
+            @media (max-width: 1200px) {
+            .gallery { column-count: 3; }
+            }
 
-export default function MasonryGallery({ items = [] }) {
-    const [modalItem, setModalItem] = useState(null);
+            @media (max-width: 768px) {
+            .gallery { column-count: 2; }
+            }
 
-    const styles = {
-        masonry: {
-            columnCount: 3,
-            columnGap: '14px',
-        },
-        item: {
-            breakInside: 'avoid',
-            marginBottom: '14px',
-            cursor: 'pointer',
-        },
-        media: {
-            width: '100%',
-            display: 'block',
-            borderRadius: '6px',
-            objectFit: 'cover',
-        },
-        modal: {
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.85)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '20px',
-        },
-        modalContent: {
-            maxWidth: '90%',
-            maxHeight: '90%',
-            textAlign: 'center',
-        },
-        modalMedia: {
-            maxWidth: '100%',
-            maxHeight: '80vh',
-            borderRadius: '8px',
-        },
-        download: {
-            display: 'block',
-            marginTop: '12px',
-            color: '#fff',
-            textDecoration: 'underline',
-            fontSize: '0.9rem',
-        },
-    };
+            @media (max-width: 480px) {
+            .gallery { column-count: 1; }
+            }
 
-    return (
-        <>
-            <div style={styles.masonry}>
-                {items.map((item) => (
-                    <div
-                        key={item.id}
-                        style={styles.item}
-                        onClick={() => setModalItem(item)}
-                    >
-                        {item.tipo === 'imagen' ? (
-                            <img
-                                src={`/${item.ruta}`}
-                                alt={item.titulo ?? ''}
-                                loading="lazy"
-                                style={styles.media}
-                            />
-                        ) : (
-                            <video
-                                muted
-                                style={styles.media}
-                            >
-                                <source src={`/${item.ruta}`} />
-                            </video>
-                        )}
-                    </div>
-                ))}
-            </div>
-
-            {modalItem && (
-                <div
-                    style={styles.modal}
-                    onClick={() => setModalItem(null)}
-                >
-                    <div
-                        style={styles.modalContent}
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        {modalItem.tipo === 'imagen' ? (
-                            <img
-                                src={`/${modalItem.ruta}`}
-                                style={styles.modalMedia}
-                            />
-                        ) : (
-                            <video
-                                src={`/${modalItem.ruta}`}
-                                controls
-                                autoPlay
-                                style={styles.modalMedia}
-                            />
-                        )}
-
-                        <a
-                            href={`/${modalItem.ruta}`}
-                            download
-                            style={styles.download}
-                        >
-                            Descargar archivo
-                        </a>
-                    </div>
-                </div>
-            )}
-        </>
-    );
+        `}</style>
+      {images.map((src, index) => (
+        <img key={index} src={src} alt={`Galería ${index}`} />
+      ))}
+    </section>
+  );
 }

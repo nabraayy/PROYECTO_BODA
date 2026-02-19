@@ -14,7 +14,7 @@ export default function Welcome({ auth }) {
             <Main />
             <SectionBlock
                             title="BIENVENIDOS A NUESTRO: “SÍ QUIERO”"
-                            time="19:00"
+                            time="19:30"
                             place="¿NOS ACOMPAÑAS?"
                             day={"sábado, 11 de julio de 2026"}
                             mapUrl="https://maps.app.goo.gl/XNaK5LceMq2mWfs6A"

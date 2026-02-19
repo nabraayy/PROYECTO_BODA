@@ -84,13 +84,19 @@ export default function NuestraHistoria() {
                 
                 <GallerySlider
                     images={[
-                        "/boda_lucia/2.jpeg",
-                        "/boda_lucia/3.jpeg",
-                        "/boda_lucia/4.jpeg",
-                        "/boda_lucia/5.jpeg",
-                        "/boda_lucia/6.jpeg",
-                        "/boda_lucia/7.jpeg",
-                        "/boda_lucia/8.jpeg"
+                        "/boda_lucia/Tu historia/240822.0238.jpg",
+                        "/boda_lucia/Tu historia/240822.0239.jpg",
+                        "/boda_lucia/Tu historia/240822.0244.jpg",
+                        "/boda_lucia/Tu historia/240822.0251.jpg",
+                        "/boda_lucia/Tu historia/240822.0259.jpg",
+                        "/boda_lucia/Tu historia/240822.0271.jpg",
+                        "/boda_lucia/Tu historia/240822.0287.jpg",
+                        "/boda_lucia/Tu historia/240822.0290.jpg",
+                        "/boda_lucia/Tu historia/240822.0292.jpg",
+                        "/boda_lucia/Tu historia/240822.0305.jpg",
+                        "/boda_lucia/Tu historia/240822.0306.jpg",
+                        "/boda_lucia/Tu historia/240822.0323.jpg",
+                        "/boda_lucia/Tu historia/240822.0334.jpg",
                     ]}
                 />
                
