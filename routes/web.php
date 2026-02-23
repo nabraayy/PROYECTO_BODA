@@ -41,7 +41,7 @@ Route::get('/confirmar', function () {
     return Inertia::render('Confirmacion');
 })->name('confirmar.asistencia');
 
-Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia');
+Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia.store');
 
 Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
 Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
