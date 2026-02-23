@@ -1,3 +1,4 @@
+import Galeria from "@/Pages/Galeria";
 import React, { useState } from "react";
 
 export default function GallerySlider({ images }) {
@@ -25,6 +26,7 @@ export default function GallerySlider({ images }) {
 
     const startIndex = page * 3;
     const visibleImages = images.slice(startIndex, startIndex + 3);
+
 
     return (
         <>

@@ -167,9 +167,9 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                     {galeria.map((item) => (
                         <div key={item.id} className="gallery-item" onClick={() => setModalItem(item)}>
                             {item.tipo === 'imagen' ? (
-                                <img src={`/${item.ruta}`} alt="" loading="lazy" />
+                                <img src={item.url}alt="" loading="lazy" />
                             ) : (
-                                <video src={`/${item.ruta}`} muted playsInline />
+                                <video src={item.url} muted playsInline />
                             )}
                         </div>
                     ))}

@@ -14,7 +14,17 @@ class GaleriaController extends Controller
     public function index()
     {
         return Inertia::render('Galeria', [
-            'galeria' => Galeria::latest()->get()
+            'galeria' => Galeria::latest()->get()->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'ruta' => $item->ruta,
+                    'tipo' => $item->tipo,
+                    'titulo' => $item->titulo,
+                    'descripcion' => $item->descripcion,
+                    'created_at' => $item->created_at->format('d M Y'),
+                    'url' => Storage::disk('s3')->url($item->ruta),
+                ];
+            }),
         ]);
     }
 
@@ -29,16 +39,13 @@ class GaleriaController extends Controller
         $file = $request->file('archivo');
         $mime = $file->getMimeType();
 
-        // 1. Asegurar que las carpetas existen (Evita errores de guardado)
-        Storage::disk('public')->makeDirectory('galeria/imagenes');
-        Storage::disk('public')->makeDirectory('galeria/videos');
 
         // 🎥 VÍDEOS
         if (str_starts_with($mime, 'video/')) {
-            $path = $file->store('galeria/videos', 'public');
+            $path = $file->store('galeria/videos', 's3');
             
             Galeria::create([
-                'ruta' => 'storage/' . $path,
+                'ruta' =>  $path,
                 'tipo' => 'video',
                 'titulo' => $request->titulo,
                 'descripcion' => $request->descripcion,
@@ -47,34 +54,29 @@ class GaleriaController extends Controller
             return redirect()->route('galeria.index');
         }
 
-        // 🖼️ IMÁGENES
+        
         try {
             ini_set('memory_limit', '1024M');
             $manager = new ImageManager(new Driver());
             
-            // Leemos la imagen y corregimos la orientación según EXIF (Móviles)
+            
             $image = $manager->read($file);
             
-            // Esta línea es vital para fotos de móvil:
-            // Asegura que si la foto se tomó en vertical, se mantenga vertical.
             $image->orient(); 
 
-            // scale() es mejor que resize() porque garantiza que no se deforme
             if ($image->width() > 2500) {
                 $image->scale(width: 2500);
             }
 
             $filename = uniqid('img_') . '.jpg';
-            // Usamos Storage para guardar, es más limpio que storage_path directo
             $encoded = $image->toJpeg(80);
-            Storage::disk('public')->put('galeria/imagenes/' . $filename, (string) $encoded);
-            
-            $finalPath = 'storage/galeria/imagenes/' . $filename;
+            Storage::disk('s3')->put('galeria/imagenes/' . $filename, (string) $encoded, 'public');
+
+            $finalPath = 'galeria/imagenes/' . $filename;
 
         } catch (\Exception $e) {
-            // SI FALLA (HEIC, 4K extremo), guardamos ORIGINAL para no perder la subida
-            $path = $file->store('galeria/imagenes', 'public');
-            $finalPath = 'storage/' . $path;
+            $path = $file->store('galeria/imagenes', 's3');
+            $finalPath = $path;
         }
 
         Galeria::create([
