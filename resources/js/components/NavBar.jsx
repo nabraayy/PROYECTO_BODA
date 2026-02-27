@@ -142,7 +142,7 @@ export default function NavBar() {
                         }
 
                         .header-center {
-                            margin-bottom: 15px;
+                            margin-bottom: 10px;
                             text-align: center;
                         }
 
