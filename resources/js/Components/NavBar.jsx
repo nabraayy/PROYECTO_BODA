@@ -58,11 +58,15 @@ export default function NavBar() {
                     }
 
                     /* CENTRO */
+                    .header-center {
+                        flex: 1;
+                        text-align: center;
+                    }
+
                     .header-center h2 {
                         margin: 0;
                         font-family: Copperplate;
                         font-size: 1.9rem;
-                        text-align: center;
                     }
 
                     .header-center a {
@@ -73,7 +77,6 @@ export default function NavBar() {
                     /* DERECHA */
                     .header-right {
                         display: flex;
-                        justify-content: flex-end;
                         gap: 15px;
                     }
 
@@ -131,16 +134,16 @@ export default function NavBar() {
                         .header {
                             flex-direction: column;
                             padding: 15px 20px;
-                            align-items: center; /* Centra los elementos */
+                            align-items: center;
                         }
 
-                        .header-left,
-                        .header-right {
-                            display: none; /* Esconde los enlaces en el desktop */
+                        .header-left {
+                            display: none;
                         }
 
                         .header-center {
                             margin-bottom: 15px;
+                            text-align: center;
                         }
 
                         .menu-toggle {
@@ -149,9 +152,13 @@ export default function NavBar() {
                             color: white;
                         }
 
+                        .header-right {
+                            display: none;
+                        }
+
                         .mobile-menu {
                             display: ${menuOpen ? "flex" : "none"};
-                            align-items: center; /* Centra los enlaces dentro del menú */
+                            align-items: center;
                         }
                     }
                 `}
@@ -159,7 +166,7 @@ export default function NavBar() {
 
             <header className={`header ${scrolled ? "scrolled" : ""}`}>
 
-                {/* IZQUIERDA: enlaces */}
+                {/* IZQUIERDA: enlaces (ocultos en móviles) */}
                 {auth.user ? (
                     <div className="header-left">
                         <Link href="/nuestra-historia">Nuestra historia</Link>
@@ -171,7 +178,7 @@ export default function NavBar() {
                     </div>
                 )}
 
-                {/* CENTRO: logo */}
+                {/* CENTRO: logo (siempre centrado) */}
                 <div className="header-center">
                     <h2>
                         <Link href="/">L&R 11/07/2026</Link>
@@ -216,7 +223,7 @@ export default function NavBar() {
                     </Link>
                 </div>
 
-                {/* DERECHA: botones */}
+                {/* DERECHA: botones (ocultos en móviles) */}
                 <div className="header-right">
                     {auth.user ? (
                         auth.user.role === 'admin' ? (
