@@ -5,7 +5,6 @@ export default function NavBar() {
     const { url, props } = usePage();
     const auth = props.auth ?? {};
     const [scrolled, setScrolled] = useState(false);
-    const [menuOpen, setMenuOpen] = useState(false);
 
     // Detecta scroll para cambiar el fondo del navbar
     useEffect(() => {
@@ -102,52 +101,20 @@ export default function NavBar() {
                         background-color: #5f6f52;
                     }
 
-                    /* Menú móvil */
-                    .mobile-menu {
-                        display: none;
-                        flex-direction: column;
-                        gap: 10px;
-                        background-color: rgba(0, 0, 0, 0.75);
-                        position: absolute;
-                        top: 60px;
-                        right: 20px;
-                        padding: 10px;
-                        border-radius: 5px;
-                    }
-
-                    .mobile-menu a {
-                        color: white;
-                        text-decoration: none;
-                        font-weight: 300;
-                    }
-
-                    .menu-toggle {
-                        display: none;
-                        cursor: pointer;
-                    }
-
                     @media (max-width: 900px) {
                         .header {
-                            grid-template-columns: 1fr auto;
+                            grid-template-columns: 1fr 1fr 1fr; /* Ajustado para pantallas pequeñas */
+                            padding: 15px 20px;
                         }
 
                         .header-left,
                         .header-right {
-                            display: none;
+                            gap: 10px;
+                            display: flex;
                         }
 
                         .header-center {
                             justify-self: center;
-                        }
-
-                        .menu-toggle {
-                            display: block;
-                            font-size: 1.5rem;
-                            color: white;
-                        }
-
-                        .mobile-menu {
-                            display: ${menuOpen ? "flex" : "none"};
                         }
                     }
                 `}
@@ -172,36 +139,6 @@ export default function NavBar() {
                     <h2>
                         <Link href="/">L&R 11/07/2026</Link>
                     </h2>
-                </div>
-
-                {/* MENÚ MOVIL: botón de menú */}
-                <div className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-                    ☰
-                </div>
-
-                {/* MOBILE MENU: opciones */}
-                <div className="mobile-menu">
-                    {auth.user ? (
-                        <>
-                            {auth.user.role === 'admin' ? (
-                                <Link href={route("dashboard")}>Dashboard</Link>
-                            ) : (
-                                <Link
-                                    href={route('logout')}
-                                    method="post"
-                                    as="button"
-                                    className="logout-btn"
-                                >
-                                    Logout
-                                </Link>
-                            )}
-                        </>
-                    ) : (
-                        <Link href={route("login")}>Iniciar sesión</Link>
-                    )}
-                    <Link href="/confirmar" className="confirm-btn">
-                        Confirmar asistencia
-                    </Link>
                 </div>
 
                 {/* DERECHA: botones */}
