@@ -28,8 +28,8 @@ export default function NavBar() {
             <style>
                 {`
                     .header {
-                        display: grid;
-                        grid-template-columns: 1fr auto 1fr;
+                        display: flex;
+                        justify-content: space-between;
                         align-items: center;
                         padding: 20px 40px;
                         position: fixed;
@@ -129,17 +129,18 @@ export default function NavBar() {
 
                     @media (max-width: 900px) {
                         .header {
-                            grid-template-columns: 1fr 1fr 1fr;
+                            flex-direction: column;
                             padding: 15px 20px;
+                            align-items: center; /* Centra los elementos */
                         }
 
                         .header-left,
                         .header-right {
-                            display: none;
+                            display: none; /* Esconde los enlaces en el desktop */
                         }
 
                         .header-center {
-                            justify-self: center;
+                            margin-bottom: 15px;
                         }
 
                         .menu-toggle {
@@ -150,6 +151,7 @@ export default function NavBar() {
 
                         .mobile-menu {
                             display: ${menuOpen ? "flex" : "none"};
+                            align-items: center; /* Centra los enlaces dentro del menú */
                         }
                     }
                 `}
@@ -186,7 +188,11 @@ export default function NavBar() {
                     {auth.user ? (
                         <>
                             {auth.user.role === 'admin' ? (
+                                <>
                                 <Link href={route("dashboard")}>Dashboard</Link>
+                                <Link href="/nuestra-historia">Nuestra historia</Link>
+                                <Link href="/galeria">Galería</Link>
+                                </>
                             ) : (
                               <>  
                                 <Link
