@@ -224,8 +224,6 @@ export default function NavBar() {
                         auth.user.role === 'admin' ? (
                             <>
                                 <Link href={route("dashboard")}>Dashboard</Link>
-                                <Link href="/nuestra-historia">Nuestra historia</Link>
-                                <Link href="/galeria">Galería</Link>
                             </>
                         ) : (
                             <>
@@ -237,8 +235,6 @@ export default function NavBar() {
                                 >
                                     Logout
                                 </Link>
-                                <Link href="/nuestra-historia">Nuestra historia</Link>
-                                <Link href="/galeria">Galería</Link>
                             </>
                         )
                     ) : (
