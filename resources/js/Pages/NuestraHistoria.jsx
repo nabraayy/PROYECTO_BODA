@@ -100,7 +100,6 @@ export default function NuestraHistoria() {
                     ]}
                 />
             </div>
-
             <Footer />
         </div>
     );
