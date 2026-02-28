@@ -35,7 +35,7 @@ export default function SectionBlock({
                         width: '100%',
                         height: 'auto',
                         borderRadius: '4px',
-                        maxWidth: '400px', // Puedes ajustar el tamaño máximo de la imagen
+                        maxWidth: '600px', // Aumentamos el tamaño máximo de la imagen en pantallas grandes
                         objectFit: 'contain', // Esto asegura que la imagen se ajusta sin distorsión
                     }} 
                 />
