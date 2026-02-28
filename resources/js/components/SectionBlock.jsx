@@ -28,7 +28,8 @@ export default function SectionBlock({
                     style={{
                         width: '100%',
                         height: 'auto',
-                        borderRadius: '4px'
+                        borderRadius: '4px',
+                        justifyContent: 'center'
                     }} 
                 />
             </div>
