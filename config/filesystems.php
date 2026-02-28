@@ -47,7 +47,7 @@ return [
             'report' => false,
         ],
 
-        's3' => [
+        /*'s3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -58,6 +58,19 @@ return [
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
             'report' => false,
+        ],*/
+        's3' => [
+        'driver' => 's3',
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION'),
+        'bucket' => env('AWS_BUCKET'),
+        'endpoint' => env('AWS_ENDPOINT'),  // Endpoint de Cloudflare R2
+        'url' => env('AWS_URL'),  // URL pública de Cloudflare R2 (opcional, si los archivos son públicos)
+        'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', true), // Necesario para Cloudflare R2
+        'visibility' => 'public', // O 'private' según tu necesidad
+        'throw' => false,  // Configurar para que no arroje excepciones automáticamente
+        'report' => false,  // Desactivar reporte de errores
         ],
 
     ],

@@ -88,4 +88,13 @@ class GaleriaController extends Controller
 
         return redirect()->route('galeria.index');
     }
+
+    public function getDownloadLink($filename)
+    {
+        // Generar un enlace público (sin expiración)
+        $fileUrl = Storage::disk('s3')->url($filename);
+
+        return response()->json(['url' => $fileUrl]);
+    }
+    
 }

@@ -45,5 +45,6 @@ Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->
 
 Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
 Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
+Route::get('download-link/{filename}', [GaleriaController::class, 'getDownloadLink']);
 
 require __DIR__.'/auth.php';
