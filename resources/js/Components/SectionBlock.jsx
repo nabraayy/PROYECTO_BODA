@@ -18,9 +18,9 @@ export default function SectionBlock({
                 display: 'flex',
                 flexDirection: reverse ? 'row-reverse' : 'row',
                 alignItems: 'center',
-                padding: '40px 0',
+                padding: '40px 20px',
                 backgroundColor: '#dce6d4',
-                flexWrap: 'wrap' // Esto ayuda a que los elementos se ajusten cuando se apilan
+                flexWrap: 'wrap', // Esto ayuda a que los elementos se ajusten en pantallas pequeñas
             }}
         >
             {/* Imagen */}
@@ -54,17 +54,27 @@ export default function SectionBlock({
                 {`
                     @media (max-width: 900px) {
                         .section-block {
-                            flex-direction: column; /* Apilar imagen y texto en pantallas pequeñas */
-                            text-align: center;
+                            padding: 20px 15px; /* Reduce el padding en móviles */
+                            flex-direction: column; /* Apila la imagen y el texto en pantallas pequeñas */
+                            text-align: center; /* Asegura que el texto esté centrado */
                         }
-                        
+
+                        .section-block img {
+                            max-width: 100%; /* Asegura que la imagen ocupe todo el ancho disponible */
+                            margin-bottom: 20px; /* Añade un margen entre la imagen y el texto */
+                        }
+
                         .section-block .header-left,
                         .section-block .header-right {
                             max-width: 100%; /* Asegura que ocupen todo el ancho disponible */
                         }
 
-                        .section-block .header-left img {
-                            margin-bottom: 20px; /* Añade un margen entre la imagen y el texto */
+                        .section-block h3 {
+                            font-size: 1.5rem; /* Reduce el tamaño de la fuente en móviles */
+                        }
+
+                        .section-block p {
+                            font-size: 1rem; /* Ajusta el tamaño del texto en móviles */
                         }
                     }
                 `}
