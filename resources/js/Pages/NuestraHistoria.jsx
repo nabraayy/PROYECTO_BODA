@@ -37,7 +37,7 @@ export default function NuestraHistoria() {
                     }}
                 />
             </div>
-            
+
             <div
                 style={{
                     backgroundColor: '#dce6d4',
@@ -100,6 +100,7 @@ export default function NuestraHistoria() {
                     ]}
                 />
             </div>
+
             <Footer />
         </div>
     );
