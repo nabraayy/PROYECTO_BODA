@@ -17,11 +17,17 @@ export default function SectionBlock({
                 alignItems: 'center',
                 padding: '40px 0',
                 backgroundColor: '#dce6d4',
-                flexWrap: 'wrap' // Agregar para permitir que los elementos se apilen en pantallas pequeñas
+                flexWrap: 'wrap' // Asegurarse de que los elementos se apilen en pantallas pequeñas
             }}
         >
             {/* Imagen */}
-            <div style={{ flex: 1, padding: '20px', minWidth: '250px' }}>
+            <div style={{ 
+                flex: 1, 
+                padding: '20px', 
+                minWidth: '250px', 
+                display: 'flex', 
+                justifyContent: 'center' // Esto centra la imagen
+            }}>
                 <img 
                     src={image} 
                     alt={title} 
@@ -29,7 +35,8 @@ export default function SectionBlock({
                         width: '100%',
                         height: 'auto',
                         borderRadius: '4px',
-                        justifyContent: 'center'
+                        maxWidth: '400px', // Puedes ajustar el tamaño máximo de la imagen
+                        objectFit: 'contain', // Esto asegura que la imagen se ajusta sin distorsión
                     }} 
                 />
             </div>
@@ -39,7 +46,7 @@ export default function SectionBlock({
                 flex: 1,
                 padding: '20px',
                 textAlign: 'center',
-                minWidth: '250px'  // Asegurarse de que el texto no se quede comprimido
+                minWidth: '250px'
             }}>
                 <h3 style={{
                     fontSize: '2rem', 
@@ -88,6 +95,7 @@ export default function SectionBlock({
                         }
                         .section-block img {
                             max-width: 90%; /* Ajustar el tamaño de la imagen en dispositivos pequeños */
+                            object-fit: contain; /* Asegura que la imagen no se distorsione */
                         }
                         .section-block h3 {
                             font-size: 1.5rem; /* Ajustar tamaño del título */
