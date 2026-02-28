@@ -28,8 +28,8 @@ export default function NavBar() {
             <style>
                 {`
                     .header {
-                        display: flex;
-                        justify-content: space-between;
+                        display: grid;
+                        grid-template-columns: 1fr auto 1fr;
                         align-items: center;
                         padding: 20px 40px;
                         position: fixed;
@@ -58,15 +58,11 @@ export default function NavBar() {
                     }
 
                     /* CENTRO */
-                    .header-center {
-                        flex: 1;
-                        text-align: center;
-                    }
-
                     .header-center h2 {
                         margin: 0;
                         font-family: Copperplate;
                         font-size: 1.9rem;
+                        text-align: center;
                     }
 
                     .header-center a {
@@ -77,6 +73,7 @@ export default function NavBar() {
                     /* DERECHA */
                     .header-right {
                         display: flex;
+                        justify-content: flex-end;
                         gap: 15px;
                     }
 
@@ -132,33 +129,31 @@ export default function NavBar() {
 
                     @media (max-width: 900px) {
                         .header {
-                            flex-direction: column;
+                            grid-template-columns: 1fr auto; /* Cambia la estructura a dos columnas */
                             padding: 15px 20px;
-                            align-items: center;
                         }
 
                         .header-left {
-                            display: none;
+                            display: none; /* Esconde los enlaces en el escritorio */
                         }
 
                         .header-center {
-                            margin-bottom: 10px;
-                            text-align: center;
+                            justify-self: center;
+                            margin-bottom: 10px; /* Ajuste visual en móviles */
+                        }
+
+                        .header-right {
+                            display: none; /* Esconde los botones de la derecha en móviles */
                         }
 
                         .menu-toggle {
-                            display: block;
+                            display: block; /* Muestra el botón del menú en móviles */
                             font-size: 1.5rem;
                             color: white;
                         }
 
-                        .header-right {
-                            display: none;
-                        }
-
                         .mobile-menu {
-                            display: ${menuOpen ? "flex" : "none"};
-                            align-items: center;
+                            display: ${menuOpen ? "flex" : "none"}; /* Despliega el menú cuando está abierto */
                         }
                     }
                 `}
@@ -166,7 +161,7 @@ export default function NavBar() {
 
             <header className={`header ${scrolled ? "scrolled" : ""}`}>
 
-                {/* IZQUIERDA: enlaces (ocultos en móviles) */}
+                {/* IZQUIERDA: enlaces (solo en escritorio) */}
                 {auth.user ? (
                     <div className="header-left">
                         <Link href="/nuestra-historia">Nuestra historia</Link>
@@ -196,22 +191,22 @@ export default function NavBar() {
                         <>
                             {auth.user.role === 'admin' ? (
                                 <>
-                                <Link href={route("dashboard")}>Dashboard</Link>
-                                <Link href="/nuestra-historia">Nuestra historia</Link>
-                                <Link href="/galeria">Galería</Link>
+                                    <Link href={route("dashboard")}>Dashboard</Link>
+                                    <Link href="/nuestra-historia">Nuestra historia</Link>
+                                    <Link href="/galeria">Galería</Link>
                                 </>
                             ) : (
-                              <>  
-                                <Link
-                                    href={route('logout')}
-                                    method="post"
-                                    as="button"
-                                    className="logout-btn"
-                                >
-                                    Logout
-                                </Link>
-                                <Link href="/nuestra-historia">Nuestra historia</Link>
-                                <Link href="/galeria">Galería</Link>
+                                <>  
+                                    <Link
+                                        href={route('logout')}
+                                        method="post"
+                                        as="button"
+                                        className="logout-btn"
+                                    >
+                                        Logout
+                                    </Link>
+                                    <Link href="/nuestra-historia">Nuestra historia</Link>
+                                    <Link href="/galeria">Galería</Link>
                                 </>
                             )}
                         </>
@@ -223,27 +218,27 @@ export default function NavBar() {
                     </Link>
                 </div>
 
-                {/* DERECHA: botones (ocultos en móviles) */}
+                {/* DERECHA: botones (solo en escritorio) */}
                 <div className="header-right">
                     {auth.user ? (
                         auth.user.role === 'admin' ? (
                             <>
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                            <Link href="/nuestra-historia">Nuestra historia</Link>
-                            <Link href="/galeria">Galería</Link>
+                                <Link href={route("dashboard")}>Dashboard</Link>
+                                <Link href="/nuestra-historia">Nuestra historia</Link>
+                                <Link href="/galeria">Galería</Link>
                             </>
                         ) : (
                             <>
-                            <Link
-                                href={route('logout')}
-                                method="post"
-                                as="button"
-                                className="logout-btn"
-                            >
-                                Logout
-                            </Link>
-                             <Link href="/nuestra-historia">Nuestra historia</Link>
-                            <Link href="/galeria">Galería</Link>
+                                <Link
+                                    href={route('logout')}
+                                    method="post"
+                                    as="button"
+                                    className="logout-btn"
+                                >
+                                    Logout
+                                </Link>
+                                <Link href="/nuestra-historia">Nuestra historia</Link>
+                                <Link href="/galeria">Galería</Link>
                             </>
                         )
                     ) : (
