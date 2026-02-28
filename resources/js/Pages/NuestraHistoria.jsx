@@ -2,7 +2,6 @@ import React from 'react';
 import NavBar from '@/Components/NavBar';
 import GallerySlider from '@/Components/GallerySlider';
 import Footer from '@/components/Footer';
-
 export default function NuestraHistoria() {
     return (
         <div>
@@ -21,34 +20,32 @@ export default function NuestraHistoria() {
                 </div>
             </section>
 
-            <div
+        <div
+            style={{
+                width: '100%',
+                overflow: 'hidden'
+            }}
+        >
+            <img
+                src="/boda_lucia/cala.png"  
+                alt="Nuestra historia"
                 style={{
                     width: '100%',
-                    overflow: 'hidden'
+                    height: 'auto',
+                    display: 'block'
                 }}
-            >
-                <img
-                    src="/boda_lucia/cala.png"  
-                    alt="Nuestra historia"
-                    style={{
-                        width: '100%',
-                        height: 'auto',
-                        display: 'block'
-                    }}
-                />
-            </div>
-
+            />
+        </div>
             <div
                 style={{
                     backgroundColor: '#dce6d4',
-                    padding: '80px 20px',
+                    padding: '80px 40px',
                     display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '40px'
+                    gap: '40px',
+                    alignItems: 'center'
                 }}
             >
-                <div style={{ flex: 1, maxWidth: '600px' }}>
+                <div style={{ flex: 1 }}>
                     <img
                         src="/boda_lucia/2.jpeg"
                         alt="Lucia y Román"
@@ -61,14 +58,14 @@ export default function NuestraHistoria() {
                 </div>
 
                 {/* Texto */}
-                <div style={{ flex: 1, maxWidth: '600px', textAlign: 'center' }}>
+                <div className="flex-1">
                     <h2 className="font-serif text-[2.6rem] md:text-[3rem] font-light text-[#6f7f60] mb-8 tracking-wide">
                         Lucía & Román
                     </h2>
 
-                    <div className="w-24 h-px bg-black opacity-60 mb-8 mx-auto" />
+                    <div className="w-24 h-px bg-black opacity-60 mb-8" />
 
-                    <p className="text-[1.1rem] md:text-[1.2rem] leading-relaxed text-black max-w-xl mx-auto">
+                    <p className="text-[1.1rem] md:text-[1.2rem] leading-relaxed text-black max-w-xl">
                         Una sesión de embarazo que terminó convirtiéndose en una pedida de mano.
                         El mejor verano de nuestras vidas. Menorca. Una cala grabada a fuego en
                         nuestra memoria: <span className="italic">Sa Mesquida</span>. Tú, yo y una
@@ -79,9 +76,12 @@ export default function NuestraHistoria() {
                         Os dejamos algunas fotos para que podáis ver parte de ese momentazo.
                     </p>
                 </div>
+
             </div>
 
-            <div style={{ padding: '80px 20px', textAlign: 'center' }}>
+            
+            <div style={{ padding: '80px 40px', textAlign: 'center' }}>
+                
                 <GallerySlider
                     images={[
                         "/boda_lucia/Tu historia/240822.0238.jpg",
@@ -99,8 +99,10 @@ export default function NuestraHistoria() {
                         "/boda_lucia/Tu historia/240822.0334.jpg",
                     ]}
                 />
+               
             </div>
-            <Footer />
+             <Footer />
         </div>
+        
     );
 }
