@@ -4,12 +4,12 @@ import axios from 'axios';
 function GalleryModal({ item, onClose }) {
   const [downloadUrl, setDownloadUrl] = useState(null);
 
-  // Obtener el enlace de descarga desde el backend
+  // Manejo del evento de descarga
   const handleDownload = async () => {
     try {
       // Solicitar el enlace de descarga al backend
       const response = await axios.get(`/api/download-link/${item.ruta}`);
-      setDownloadUrl(response.data.url);  // Guardar el enlace de descarga en el estado
+      setDownloadUrl(response.data.url);  // Guardar la URL del archivo
     } catch (error) {
       console.error('Error obteniendo el enlace de descarga', error);
     }
@@ -71,7 +71,7 @@ function GalleryModal({ item, onClose }) {
             Descargar
           </button>
 
-          {/* Mostrar el enlace de descarga solo si lo obtuvimos */}
+          {/* Mostrar el enlace de descarga solo si lo obtenemos */}
           {downloadUrl && (
             <a
               href={downloadUrl}
