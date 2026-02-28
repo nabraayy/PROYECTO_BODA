@@ -1,11 +1,8 @@
-import Galeria from "@/Pages/Galeria";
 import React, { useState } from "react";
 
 export default function GallerySlider({ images }) {
     const [page, setPage] = useState(0);
     const [animating, setAnimating] = useState(false);
-    
-    // Estado para la imagen que se ve en grande
     const [selectedImg, setSelectedImg] = useState(null);
 
     const totalPages = Math.ceil(images.length / 3);
@@ -27,7 +24,6 @@ export default function GallerySlider({ images }) {
     const startIndex = page * 3;
     const visibleImages = images.slice(startIndex, startIndex + 3);
 
-
     return (
         <>
             <style>
@@ -39,7 +35,7 @@ export default function GallerySlider({ images }) {
 
                 .gallery-grid {
                     display: grid;
-                    grid-template-columns: repeat(3, 1fr);
+                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                     gap: 20px;
                     opacity: 1;
                     transform: translateY(0);
@@ -53,12 +49,12 @@ export default function GallerySlider({ images }) {
 
                 .gallery-item {
                     width: 100%;
-                    height: 450px;
+                    height: 300px;  /* Ajustado para que no sea tan grande */
                     overflow: hidden;
                     cursor: pointer;
                     transition: opacity 0.3s ease;
                 }
-                
+
                 .gallery-item:hover {
                     opacity: 0.9;
                 }
@@ -103,6 +99,31 @@ export default function GallerySlider({ images }) {
                     object-fit: contain;
                     border-radius: 4px;
                     cursor: default;
+                }
+
+                /* MEDIA QUERIES PARA RESPONSIVIDAD */
+                @media (max-width: 768px) {
+                    .gallery-arrows {
+                        font-size: 1.5rem;
+                    }
+
+                    .gallery-item {
+                        height: 250px; /* Reducir la altura en pantallas pequeñas */
+                    }
+
+                    .gallery-item img {
+                        object-fit: cover;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .gallery-arrows {
+                        font-size: 1.2rem;
+                    }
+
+                    .gallery-item {
+                        height: 200px; /* Ajustar aún más la altura */
+                    }
                 }
             `}
             </style>
