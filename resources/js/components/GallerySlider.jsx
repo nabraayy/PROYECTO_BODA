@@ -35,7 +35,7 @@ export default function GallerySlider({ images }) {
 
                 .gallery-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                    grid-template-columns: repeat(3, 1fr);
                     gap: 20px;
                     opacity: 1;
                     transform: translateY(0);
@@ -49,7 +49,7 @@ export default function GallerySlider({ images }) {
 
                 .gallery-item {
                     width: 100%;
-                    height: 300px;  /* Ajustado para que no sea tan grande */
+                    height: 450px;
                     overflow: hidden;
                     cursor: pointer;
                     transition: opacity 0.3s ease;
@@ -101,28 +101,24 @@ export default function GallerySlider({ images }) {
                     cursor: default;
                 }
 
-                /* MEDIA QUERIES PARA RESPONSIVIDAD */
+                /* Media Queries para ajustar en pantallas pequeñas */
                 @media (max-width: 768px) {
-                    .gallery-arrows {
-                        font-size: 1.5rem;
+                    .gallery-grid {
+                        grid-template-columns: repeat(1, 1fr); /* Cambiar a una columna en móviles */
                     }
 
                     .gallery-item {
-                        height: 250px; /* Reducir la altura en pantallas pequeñas */
+                        height: 300px; /* Ajustar altura en móviles */
                     }
 
-                    .gallery-item img {
-                        object-fit: cover;
+                    .gallery-arrows {
+                        font-size: 1.5rem;
                     }
                 }
 
                 @media (max-width: 480px) {
-                    .gallery-arrows {
-                        font-size: 1.2rem;
-                    }
-
                     .gallery-item {
-                        height: 200px; /* Ajustar aún más la altura */
+                        height: 250px; /* Ajustar aún más la altura en pantallas muy pequeñas */
                     }
                 }
             `}
