@@ -87,7 +87,7 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                                             Asistencia
                                         </th>
                                         <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
-                                            Pax
+                                            Personas
                                         </th>
                                         <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
                                             Alergias / Notas
