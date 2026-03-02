@@ -79,6 +79,9 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                 <p className="text-[#556b4e] font-bold text-xl text-center">
                                      608 41 90 71
                                 </p>
+                                <p className="text-[#556b4e] font-bold text-xl text-center">
+                                     602 24 65 35
+                                </p>
                             </div>
                         </div>
                     ) : (
