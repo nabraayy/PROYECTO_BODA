@@ -14,24 +14,19 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
         const matchesName = c.nombre.toLowerCase().includes(search.toLowerCase());
         const matchesIntolerances = !onlyIntolerances || (c.intolerancias && c.intolerancias.trim() !== '');
         const matchesAttendance = attendanceFilter === 'all' || c.asistencia === attendanceFilter;
-
         return matchesName && matchesIntolerances && matchesAttendance;
     });
 
     return (
         <AuthenticatedLayout
-            header={
-                <h2 className="font-serif text-xl md:text-2xl text-[#556b4e]">
-                    Panel de confirmaciones
-                </h2>
-            }
+            header={<h2 className="font-serif text-xl md:text-2xl text-[#556b4e]">Panel de confirmaciones</h2>}
         >
             <Head title="Dashboard" />
 
             <div className="py-6 md:py-12">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     
-                    {/* Estadísticas: 2 columnas en móvil, 5 en escritorio */}
+                    {/* Estadísticas */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-8">
                         <StatCard title="Confirmaciones" value={stats.total} />
                         <StatCard title="Asisten" value={stats.yes} />
@@ -43,7 +38,6 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                     {/* Filtros */}
                     <div className="bg-[#f5f7f3] border border-[#dce6d4] rounded-lg p-4 md:p-6 mb-8 shadow-sm">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                            
                             <input
                                 type="text"
                                 placeholder="Buscar invitado..."
@@ -51,7 +45,6 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                                 onChange={e => setSearch(e.target.value)}
                                 className="w-full border border-[#9aaa8a] bg-white rounded-md px-4 py-2 text-sm focus:ring-1 focus:ring-[#6f7f60] outline-none"
                             />
-
                             <select
                                 value={attendanceFilter}
                                 onChange={e => setAttendanceFilter(e.target.value)}
@@ -61,8 +54,7 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                                 <option value="si">Confirmados (Si)</option>
                                 <option value="no">Cancelados (No)</option>
                             </select>
-
-                            <label className="flex items-center gap-3 text-sm text-[#556b4e] cursor-pointer bg-white md:bg-transparent p-2 md:p-0 rounded-md border md:border-0 border-[#9aaa8a]">
+                            <label className="flex items-center gap-3 text-sm text-[#556b4e] cursor-pointer">
                                 <input
                                     type="checkbox"
                                     checked={onlyIntolerances}
@@ -74,25 +66,25 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                         </div>
                     </div>
 
-                    {/* Tabla con scroll horizontal para móvil */}
+                    {/* TABLA: Configurada para ver TODO sin cortes */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-[#dce6d4]">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
                                             Nombre Invitado
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
-                                            Asistencia
+                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                            Estado
                                         </th>
-                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
-                                            Personas
+                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                            Pax
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
-                                            Alergias / Notas
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                            Alergias / Intolerancias
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
                                             Mensaje
                                         </th>
                                     </tr>
@@ -101,37 +93,48 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                                 <tbody className="divide-y divide-gray-100 bg-white">
                                     {filteredConfirmations.length > 0 ? (
                                         filteredConfirmations.map((c, index) => (
-                                            <tr key={index} className="hover:bg-[#f5f7f3] transition-colors">
-                                                <td className="px-4 py-3">
-                                                    <div className="text-sm font-medium text-gray-900">{c.nombre}</div>
-                                                    <div className="text-xs text-gray-500">{c.user?.email || 'Sin cuenta'}</div>
+                                            <tr key={index} className="hover:bg-[#f5f7f3] transition-colors align-top">
+                                                {/* Nombre */}
+                                                <td className="px-4 py-4 min-w-[150px]">
+                                                    <div className="text-sm font-bold text-gray-900">{c.nombre}</div>
+                                                    <div className="text-[10px] text-gray-400">{c.user?.email || '—'}</div>
                                                 </td>
-                                                <td className="px-4 py-3 text-sm">
+
+                                                {/* Asistencia */}
+                                                <td className="px-4 py-4 text-center min-w-[100px]">
                                                     {c.asistencia === 'si' ? (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                            SÍ
-                                                        </span>
+                                                        <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Si</span>
                                                     ) : (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                            NO
-                                                        </span>
+                                                        <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">No</span>
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-3 text-center text-sm text-gray-600 font-bold">
+
+                                                {/* Personas */}
+                                                <td className="px-4 py-4 text-center font-bold text-gray-600">
                                                     {c.asistentes ?? '—'}
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-gray-600 max-w-[200px] truncate md:whitespace-normal">
-                                                    {c.intolerancias || <span className="text-gray-300 italic">Ninguna</span>}
+
+                                                {/* Intolerancias: Texto completo y resaltado */}
+                                                <td className="px-4 py-4 min-w-[250px] whitespace-normal">
+                                                    {c.intolerancias ? (
+                                                        <div className="text-sm text-orange-800 bg-orange-50 p-2 rounded border border-orange-100 leading-relaxed italic">
+                                                            {c.intolerancias}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-300 italic text-sm">Ninguna</span>
+                                                    )}
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-gray-500 italic max-w-[150px] truncate">
-                                                    {c.mensaje || '—'}
+
+                                                {/* Mensaje: Texto completo */}
+                                                <td className="px-4 py-4 min-w-[250px] whitespace-normal text-sm text-gray-600 leading-relaxed italic">
+                                                    {c.mensaje || <span className="text-gray-300">—</span>}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
                                             <td colSpan="5" className="px-4 py-10 text-center text-gray-400 italic">
-                                                No se han encontrado invitados con estos filtros
+                                                No hay resultados.
                                             </td>
                                         </tr>
                                     )}
