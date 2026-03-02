@@ -6,7 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
-    // Controlamos si ya se ha confirmado para mostrar el mensaje de éxito o el formulario
+    // Si yaConfirmadoServer es true, el estado inicial será true y el formulario NO se renderizará
     const [yaHaConfirmado, setYaHaConfirmado] = useState(yaConfirmadoServer);
 
     const { data, setData, post, processing, reset } = useForm({
@@ -17,7 +17,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
         mensaje: '',
     });
 
-    // Sincronización con el servidor (por si se actualizan las props de Inertia)
+    // Mantenemos sincronizado el estado con lo que diga el servidor
     useEffect(() => {
         setYaHaConfirmado(yaConfirmadoServer);
     }, [yaConfirmadoServer]);
@@ -26,7 +26,8 @@ export default function Confirmacion({ yaConfirmadoServer }) {
         e.preventDefault(); 
         post('/confirmar-asistencia', {
             onSuccess: () => {
-                setYaHaConfirmado(true); // Al tener éxito, cambiamos la vista inmediatamente
+                // Tras el éxito, bloqueamos el formulario y mostramos el mensaje
+                setYaHaConfirmado(true);
                 reset();
                 toast.success('¡Confirmación enviada con éxito!');
             },
@@ -41,7 +42,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <Head title="Confirmar asistencia" />
             <NavBar />
 
-            {/* Cabecera de la sección */}
+            {/* Cabecera común */}
             <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
                 <div className="max-w-4xl mx-auto">
                     <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">
@@ -57,38 +58,39 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
+                    {/* CONDICIONAL PRINCIPAL: Si ya confirmó, mostramos mensaje. Si no, mostramos formulario */}
                     {yaHaConfirmado ? (
-                        /* VISTA 1: MENSAJE DE YA CONFIRMADO (Se queda fijo tras enviar) */
-                        <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] transition-all duration-700">
+                        <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#6f7f60]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
                             
-                            <h2 className="font-serif text-3xl text-[#556b4e] mb-4">¡Gracias por confirmar!</h2>
+                            <h2 className="font-serif text-3xl text-[#556b4e] mb-4">¡Asistencia confirmada!</h2>
                             
                             <p className="text-gray-600 mb-10 leading-relaxed">
-                                Tu respuesta ha sido registrada correctamente en nuestra lista de invitados. ¡Estamos deseando compartir este día con vosotros!
+                                Ya hemos recibido vuestra respuesta. No es necesario que hagáis nada más, vuestros asientos ya están reservados en nuestra lista.
                             </p>
 
                             <div className="bg-[#f5f7f3] p-6 rounded-lg border border-[#dce6d4] text-left">
-                                <p className="text-[10px] text-[#7a8a70] uppercase tracking-widest mb-3 font-bold">¿Necesitas cambiar algo?</p>
-                                <p className="text-gray-600 text-sm mb-4">
-                                    Si necesitas modificar el número de asistentes, alergias o cualquier detalle, contacta con nosotros:
+                                <p className="text-[10px] text-[#7a8a70] uppercase tracking-widest mb-3 font-bold text-center">¿Necesitas hacer algún cambio?</p>
+                                <p className="text-gray-600 text-sm mb-4 text-center">
+                                    Si te has equivocado o necesitas avisarnos de algo nuevo, escríbenos:
                                 </p>
-                                <div className="space-y-1">
-                                    <p className="text-[#556b4e] font-bold text-lg">Lara: 608 41 90 71</p>
-                                    <p className="text-[#556b4e] font-bold text-lg">Rubén: 602 24 65 35</p>
+                                <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-[#556b4e] font-bold text-lg">
+                                    <span>Lucia: 608 41 90 71</span>
+                                    <span className="hidden md:inline opacity-30">|</span>
+                                    <span>Roman: 602 24 65 35</span>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        /* VISTA 2: FORMULARIO (Solo se ve si no han confirmado) */
                         <form
                             onSubmit={submit}
-                            className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100"
+                            className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700"
                         >
+                            {/* ... (Resto de los campos del formulario que ya tenías) ... */}
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Nombre y apellidos</label>
                                 <input
