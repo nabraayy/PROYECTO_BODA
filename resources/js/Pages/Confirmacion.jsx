@@ -130,12 +130,17 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                     </div>
                                     <div className="mb-8">
                                         <label className="block mb-2 text-[#556b4e]">¿Alguna intolerancia o restricción alimentaria?</label>
+                                       <span className="block mb-3 text-xs text-gray-500 italic">
+                                            Si no tienes ninguna, puedes dejar este campo en blanco.
+                                        </span>
                                         <textarea
                                             value={data.intolerancias}
                                             onChange={e => setData('intolerancias', e.target.value)}
                                             rows="3"
+                                            placeholder="Ej: Celíaco, alérgico a los frutos secos..."
                                             className="w-full border border-gray-300 px-4 py-3 resize-none focus:outline-none focus:border-[#6f7f60]"
                                         />
+                                        
                                     </div>
                                 </>
                             )}
