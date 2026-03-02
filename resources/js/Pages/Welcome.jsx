@@ -64,7 +64,7 @@ export default function Welcome({ auth }) {
                     ) : (
                         <>
                             <p className="mt-10 italic text-gray-600 text-center px-6">
-                                Gracias de corazón por acompañarnos y formar parte de este momento tan especial si decides hacerlo.
+                                Gracias de corazón por acompañarnos y formar parte de este momento tan especial.
                             </p>
                             
                         </>
