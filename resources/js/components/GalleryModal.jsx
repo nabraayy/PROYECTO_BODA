@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
 function GalleryModal({ item, onClose }) {
   const [downloadUrl, setDownloadUrl] = useState(null);
 
-  // Manejo del evento de descarga
+  // Obtener el enlace de descarga desde el backend
   const handleDownload = async () => {
     try {
-      // Solicitar el enlace de descarga al backend
+      // Hacer una solicitud GET para obtener el enlace
       const response = await axios.get(`/api/download-link/${item.ruta}`);
-      setDownloadUrl(response.data.url);  // Guardar la URL del archivo
+      setDownloadUrl(response.data.url); // Establecer la URL de descarga
     } catch (error) {
-      console.error('Error obteniendo el enlace de descarga', error);
+      console.error('Error al obtener el enlace de descarga', error);
     }
   };
 
@@ -32,7 +29,7 @@ function GalleryModal({ item, onClose }) {
       <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
         {item.tipo === 'imagen' ? (
           <img
-            src={`/${item.ruta}`}
+            src={`https://your-account-id.r2.dev/your-bucket-name/${item.ruta}`} // URL completa de R2
             alt={item.titulo ?? ''}
             style={{
               maxWidth: '95vw',
@@ -44,7 +41,7 @@ function GalleryModal({ item, onClose }) {
           />
         ) : (
           <video
-            src={`/${item.ruta}`}
+            src={`https://your-account-id.r2.dev/your-bucket-name/${item.ruta}`} // URL completa de R2
             controls
             autoPlay
             style={{
@@ -71,7 +68,7 @@ function GalleryModal({ item, onClose }) {
             Descargar
           </button>
 
-          {/* Mostrar el enlace de descarga solo si lo obtenemos */}
+          {/* Mostrar el enlace de descarga solo si lo hemos obtenido */}
           {downloadUrl && (
             <a
               href={downloadUrl}
@@ -107,5 +104,3 @@ function GalleryModal({ item, onClose }) {
     </div>
   );
 }
-
-export default GalleryModal;
