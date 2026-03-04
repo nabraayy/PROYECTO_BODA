@@ -9,10 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ConfirmationController extends Controller
 {
-    /**
-     * Aplicamos el middleware auth para que solo usuarios 
-     * registrados puedan ver o enviar el formulario.
-     */
     public function __construct()
     {
         $this->middleware('auth');
@@ -20,7 +16,7 @@ class ConfirmationController extends Controller
 
     public function index()
     {
-        // Ya no hace falta check() porque el middleware garantiza que está logueado
+        // Esto es lo que faltaba: pasar la variable al cargar la página
         $yaConfirmado = Confirmation::where('user_id', Auth::id())->exists();
 
         return Inertia::render('Confirmacion', [
@@ -29,45 +25,32 @@ class ConfirmationController extends Controller
     }
 
     public function store(Request $request)
-{
-    $currentUserId = Auth::id();
+    {
+        $currentUserId = Auth::id();
 
-    // 1. EL CANDADO: Si ya existe, no permitimos NI LA VALIDACIÓN.
-    // Simplemente mandamos al usuario de vuelta. 
-    // Al volver, el Front verá que ya existe y mostrará el mensaje de éxito.
-    if (Confirmation::where('user_id', $currentUserId)->exists()) {
-        return redirect()->back();
-    }
+        // Si ya existe, NO HACEMOS NADA. Ni validación ni insert.
+        // Volvemos atrás y el index() se encargará de decir que ya existe.
+        if (Confirmation::where('user_id', $currentUserId)->exists()) {
+            return redirect()->back();
+        }
 
-    // 2. Si ha pasado el filtro anterior, es que es la PRIMERA VEZ.
-    // Validamos los datos.
-    $validated = $request->validate([
-        'nombre'             => 'required|string|max:255',
-        'asistencia'         => 'required|in:si,no',
-        'asistentes'         => 'nullable|integer|min:0',
-        'nombres_asistentes' => 'nullable|string',
-        'intolerancias'      => 'nullable|string',
-        'mensaje'            => 'nullable|string',
-    ]);
-
-    // 3. GUARDADO ÚNICO.
-    try {
-        Confirmation::create([
-            'user_id'            => $currentUserId,
-            'nombre'             => $validated['nombre'],
-            'asistencia'         => $validated['asistencia'],
-            'asistentes'         => $validated['asistentes'] ?? 1,
-            'nombres_asistentes' => $validated['nombres_asistentes'] ?? '',
-            'intolerancias'      => $validated['intolerancias'] ?? '',
-            'mensaje'            => $validated['mensaje'] ?? '',
+        $validated = $request->validate([
+            'nombre'             => 'required|string|max:255',
+            'asistencia'         => 'required|in:si,no',
+            'asistentes'         => 'nullable|integer|min:1',
+            'nombres_asistentes' => 'nullable|string',
+            'intolerancias'      => 'nullable|string',
+            'mensaje'            => 'nullable|string',
         ]);
 
-        return redirect()->back();
+        // Usamos un try-catch por si la base de datos diera un error inesperado
+        try {
+            Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
+        } catch (\Exception $e) {
+            // Si falla el insert por duplicado o cualquier cosa, volvemos sin error 500
+            return redirect()->back();
+        }
 
-    } catch (\Exception $e) {
-        // Si por algún milisegundo de diferencia chocan dos peticiones,
-        // capturamos el error 500 y simplemente redirigimos.
         return redirect()->back();
     }
-}
 }
