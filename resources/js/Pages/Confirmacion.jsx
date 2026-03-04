@@ -1,29 +1,50 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 import NavBar from '@/Components/NavBar';
 import Footer from '@/Components/Footer';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function Confirmacion({ yaConfirmadoServer }) {
+export default function Confirmacion({ yaConfirmadoServer, auth }) {
     // Si yaConfirmadoServer es true, el estado inicial será true y el formulario NO se renderizará
     const [yaHaConfirmado, setYaHaConfirmado] = useState(yaConfirmadoServer);
 
     const { data, setData, post, processing, reset } = useForm({
         nombre: '',
         asistentes: '',
+        nombres_asistentes: [], // NUEVO
         asistencia: '',
         intolerancias: '',
         mensaje: '',
     });
+
+    // Redirigir a login si no está autenticado (extra)
+    // Importante: lo ideal es también proteger /confirmar y /confirmar-asistencia con middleware('auth')
+    useEffect(() => {
+        if (!auth?.user) {
+            router.visit('/login');
+        }
+    }, [auth]);
 
     // Mantenemos sincronizado el estado con lo que diga el servidor
     useEffect(() => {
         setYaHaConfirmado(yaConfirmadoServer);
     }, [yaConfirmadoServer]);
 
+    // Si cambia asistencia a "no", limpiamos campos relacionados
+    useEffect(() => {
+        if (data.asistencia === 'no') {
+            setData(prev => ({
+                ...prev,
+                asistentes: '',
+                nombres_asistentes: [],
+                intolerancias: '',
+            }));
+        }
+    }, [data.asistencia]);
+
     const submit = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         post('/confirmar-asistencia', {
             onSuccess: () => {
                 // Tras el éxito, bloqueamos el formulario y mostramos el mensaje
@@ -57,7 +78,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
 
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
-                    
+
                     {/* CONDICIONAL PRINCIPAL: Si ya confirmó, mostramos mensaje. Si no, mostramos formulario */}
                     {yaHaConfirmado ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
@@ -66,9 +87,9 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            
+
                             <h2 className="font-serif text-3xl text-[#556b4e] mb-4">¡Asistencia confirmada!</h2>
-                            
+
                             <p className="text-gray-600 mb-10 leading-relaxed">
                                 Ya hemos recibido vuestra respuesta. No es necesario que hagáis nada más, vuestros asientos ya están reservados en nuestra lista.
                             </p>
@@ -90,7 +111,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             onSubmit={submit}
                             className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700"
                         >
-                            {/* ... (Resto de los campos del formulario que ya tenías) ... */}
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Nombre y apellidos</label>
                                 <input
@@ -125,11 +145,54 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                             type="number"
                                             min="1"
                                             value={data.asistentes}
-                                            onChange={e => setData('asistentes', e.target.value)}
+                                            onChange={e => {
+                                                const cantidad = parseInt(e.target.value, 10) || 0;
+
+                                                setData(prev => {
+                                                    const nombresActuales = Array.isArray(prev.nombres_asistentes) ? prev.nombres_asistentes : [];
+                                                    const nuevosNombres = Array.from(
+                                                        { length: cantidad },
+                                                        (_, i) => nombresActuales[i] || ''
+                                                    );
+
+                                                    return {
+                                                        ...prev,
+                                                        asistentes: cantidad,
+                                                        nombres_asistentes: nuevosNombres,
+                                                    };
+                                                });
+                                            }}
                                             className="w-full border border-gray-200 rounded-md px-4 py-3"
                                             required
                                         />
                                     </div>
+
+                                    {/* NUEVO: nombres_asistentes dinámico */}
+                                    {Number(data.asistentes) > 0 && (
+                                        <div className="mb-6">
+                                            <label className="block mb-3 font-medium text-[#556b4e]">Nombre de los asistentes</label>
+                                            <span className="block mb-3 text-xs text-gray-400 italic">
+                                                Escribe el nombre de cada persona según el número de asistentes indicado.
+                                            </span>
+
+                                            {data.nombres_asistentes.map((nombre, index) => (
+                                                <input
+                                                    key={index}
+                                                    type="text"
+                                                    value={nombre}
+                                                    onChange={e => {
+                                                        const nuevos = [...data.nombres_asistentes];
+                                                        nuevos[index] = e.target.value;
+                                                        setData('nombres_asistentes', nuevos);
+                                                    }}
+                                                    placeholder={`Asistente ${index + 1}`}
+                                                    className="w-full border border-gray-200 rounded-md px-4 py-3 mb-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
+                                                    required
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+
                                     <div className="mb-8">
                                         <label className="block text-[#556b4e] font-medium">¿Alguna intolerancia o restricción alimentaria?</label>
                                         <span className="block mb-3 text-xs text-gray-400 italic">
@@ -168,7 +231,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                     )}
                 </div>
             </section>
-            
+
             <ToastContainer position="bottom-center" />
             <Footer />
         </>

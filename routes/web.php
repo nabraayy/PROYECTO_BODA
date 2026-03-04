@@ -37,11 +37,12 @@ Route::get('/nuestra-historia', function () {
     return Inertia::render('NuestraHistoria');
 })->name('nuestra.historia');
 
-Route::get('/confirmar', function () {
-    return Inertia::render('Confirmacion');
-})->name('confirmar.asistencia');
-
-Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia.store');
+Route::get('/confirmar', [ConfirmationController::class, 'index'])
+    ->middleware('auth')
+    ->name('confirmar.asistencia');
+Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])
+->middleware('auth')
+->name('confirmar.asistencia.store');
 
 Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
 Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
