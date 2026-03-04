@@ -24,28 +24,45 @@ class ConfirmationController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+public function store(Request $request)
 {
     $currentUserId = Auth::id();
 
-    // Si ya existe, redirigimos inmediatamente sin intentar guardar.
-    // Esto evita el error 500 de "Duplicate entry".
+    // 1. EL ESCUDO: Si ya existe, nos salimos ANTES de que explote la base de datos
     if (Confirmation::where('user_id', $currentUserId)->exists()) {
+        // Volvemos atrás sin hacer nada. El Front recibirá la señal y mostrará el éxito.
         return redirect()->back();
     }
 
+    // 2. VALIDACIÓN: Aseguramos que los datos sean correctos
     $validated = $request->validate([
         'nombre'             => 'required|string|max:255',
         'asistencia'         => 'required|in:si,no',
-        'asistentes'         => 'nullable|integer|min:1',
+        'asistentes'         => 'nullable|integer|min:0',
         'nombres_asistentes' => 'nullable|string',
         'intolerancias'      => 'nullable|string',
         'mensaje'            => 'nullable|string',
     ]);
 
-    // Creamos el registro solo si no existía antes
-    Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
+    // 3. INSERTAR CON SEGURIDAD
+    try {
+        Confirmation::create([
+            'user_id'            => $currentUserId,
+            'nombre'             => $validated['nombre'],
+            'asistencia'         => $validated['asistencia'],
+            // Usamos ?? para que si viene vacío se guarde algo coherente y no un null prohibido
+            'asistentes'         => $validated['asistentes'] ?? 0,
+            'nombres_asistentes' => $validated['nombres_asistentes'] ?? '',
+            'intolerancias'      => $validated['intolerancias'] ?? '',
+            'mensaje'            => $validated['mensaje'] ?? '',
+        ]);
 
-    return redirect()->back();
+        return redirect()->back();
+
+    } catch (\Exception $e) {
+        // Si hay un error de SQL inesperado, capturamos el fallo para que no salga el error 500
+        // y simplemente refrescamos la página.
+        return redirect()->back();
+    }
 }
 }
