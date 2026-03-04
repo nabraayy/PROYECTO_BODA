@@ -43,13 +43,12 @@ class ConfirmationController extends Controller
         // Buscar si ya existe para este usuario
         $confirmation = Confirmation::where('user_id', $user->id)->first();
 
-        if ($confirmation) {
-            // Si ya existe, actualizamos los datos
-            $confirmation->update($validated);
-        } else {
-            // Si no existe, creamos uno nuevo asociando el user_id
-            Confirmation::create(array_merge($validated, ['user_id' => $user->id]));
+        if (Confirmation::where('user_id', $userId)->exists()) {
+        return redirect()->back()->withErrors(['error' => 'Ya has enviado tu confirmación anteriormente.']);
         }
+
+        // 3. Solo llegamos aquí si es la primera vez
+        Confirmation::create(array_merge($validated, ['user_id' => $userId]));
 
         return redirect()->back()->with('message', 'Confirmación procesada correctamente');
     }
