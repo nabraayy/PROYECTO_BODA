@@ -11,9 +11,11 @@ class ConfirmationController extends Controller
 {
     public function index()
 {
+    $confirmacionExistente = \App\Models\Confirmation::where('user_id', auth()->id())->exists();
+
     return Inertia::render('Confirmacion', [
-        // Forzamos el booleano para evitar que React reciba null o 1/0
-        'yaConfirmadoServer' => Confirmation::where('user_id', auth()->id())->exists()
+        // Convertimos a booleano real (true/false)
+        'yaConfirmadoServer' => (bool)$confirmacionExistente 
     ]);
 }
 
