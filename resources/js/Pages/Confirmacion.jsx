@@ -7,9 +7,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
     
-    // IMPORTANTE: Ya no usamos useState para el bloqueo.
-    // Usamos directamente 'yaConfirmadoServer'. Si es true, el formulario no se renderiza.
-
     const { data, setData, post, processing, reset } = useForm({
         nombre: '',
         asistentes: 1,
@@ -29,7 +26,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
         post('/confirmar-asistencia', {
             preserveScroll: true,
             onSuccess: () => {
-                // Al ser exitoso, el servidor actualiza 'yaConfirmadoServer' a true
                 toast.success('¡Confirmación enviada con éxito!');
             },
             onError: (errors) => {
@@ -56,7 +52,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
-                    {/* LÓGICA DE BLOQUEO: Si el servidor confirma el registro, mostramos el éxito */}
                     {yaConfirmadoServer ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -68,16 +63,37 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             <p className="text-gray-600 mb-10 leading-relaxed">
                                 Ya hemos recibido vuestra respuesta. ¡Estamos deseando compartir este día con vosotros!
                             </p>
-                            <div className="bg-[#f5f7f3] p-6 rounded-lg border border-[#dce6d4] text-center">
-                                <p className="text-gray-600 text-sm mb-4 italic">¿Necesitas cambiar algo? Contacta con nosotros:</p>
-                                <div className="space-y-2 text-[#556b4e] font-bold text-lg">
-                                    <p>Lucia: 608 41 90 71</p>
-                                    <p>Roman: 602 24 65 35</p>
+
+                            {/* CAJA DE AVISO Y CONTACTO */}
+                            <div className="bg-[#f8faf7] border border-[#dce6d4] rounded-lg p-6 relative overflow-hidden">
+                                <div className="flex items-center justify-center mb-4 text-[#7a8a70]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span className="text-[10px] uppercase tracking-widest font-bold">Aviso importante</span>
+                                </div>
+                                
+                                <p className="text-gray-600 text-sm mb-6 leading-snug">
+                                    Si necesitas <strong>modificar algún dato</strong> o informarnos de un cambio de última hora, contacta con nosotros:
+                                </p>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="p-3 bg-white rounded border border-gray-100 shadow-sm">
+                                        <p className="text-[#556b4e] font-serif text-lg font-bold">Lucia</p>
+                                        <a href="tel:608419071" className="text-[#7a8a70] hover:text-[#556b4e] transition-colors font-medium">
+                                            608 41 90 71
+                                        </a>
+                                    </div>
+                                    <div className="p-3 bg-white rounded border border-gray-100 shadow-sm">
+                                        <p className="text-[#556b4e] font-serif text-lg font-bold">Roman</p>
+                                        <a href="tel:602246535" className="text-[#7a8a70] hover:text-[#556b4e] transition-colors font-medium">
+                                            602 24 65 35
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        /* Si no hay confirmación, mostramos el formulario */
                         <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>

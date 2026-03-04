@@ -16,7 +16,7 @@ export default function Welcome({ auth }) {
                             title="BIENVENIDOS A NUESTRO: “SÍ QUIERO”"
                             time="19:30"
                             place="¿NOS ACOMPAÑAS?"
-                            day={"sábado, 11 de julio de 2026"}
+                            day={"Sábado, 11 de julio de 2026"}
                             mapUrl="https://maps.app.goo.gl/XNaK5LceMq2mWfs6A"
                             image="/boda_lucia/8.jpeg"
             />

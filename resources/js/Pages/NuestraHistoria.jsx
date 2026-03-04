@@ -63,10 +63,6 @@ export default function NuestraHistoria() {
 
                 {/* Texto */}
                 <div style={{ flex: 1, maxWidth: '600px', textAlign: 'center' }}>
-                    <h2 className="font-serif text-[2.6rem] md:text-[3rem] font-light text-[#6f7f60] mb-8 tracking-wide">
-                        Lucía & Román
-                    </h2>
-
                     <div className="w-24 h-px bg-black opacity-60 mb-8 mx-auto" />
 
                     <p className="text-[1.1rem] md:text-[1.2rem] leading-relaxed text-black max-w-xl mx-auto">
