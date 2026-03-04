@@ -1,39 +1,36 @@
 import { Head, useForm } from '@inertiajs/react';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import NavBar from '@/Components/NavBar';
 import Footer from '@/Components/Footer';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
-    const [yaHaConfirmado, setYaHaConfirmado] = useState(yaConfirmadoServer);
+    
+    // IMPORTANTE: Ya no usamos estado local para 'yaHaConfirmado'.
+    // Usamos directamente la prop 'yaConfirmadoServer' que viene del servidor.
 
     const { data, setData, post, processing, reset } = useForm({
-        nombre: '', // Nombre del titular de la cuenta
-        asistentes: 1, // Por defecto al menos 1
-        nombres_asistentes: '', // Guardaremos aquí los nombres como texto
+        nombre: '',
+        asistentes: 1,
+        nombres_asistentes: '',
         asistencia: '',
         intolerancias: '',
         mensaje: '',
     });
 
-    // Sincronización con el servidor
-    useEffect(() => {
-        setYaHaConfirmado(yaConfirmadoServer);
-    }, [yaConfirmadoServer]);
-
-    // Función para manejar el cambio de número y preparar los campos de nombres
     const handleAsistentesChange = (e) => {
-        const num = parseInt(e.target.value);
+        const num = parseInt(e.target.value) || 1;
         setData('asistentes', num);
     };
 
     const submit = (e) => {
         e.preventDefault(); 
         post('/confirmar-asistencia', {
+            preserveScroll: true,
             onSuccess: () => {
-                setYaHaConfirmado(true);
-                reset();
+                // Inertia refresca las props automáticamente. 
+                // yaConfirmadoServer cambiará a true y la UI se actualizará sola.
                 toast.success('¡Confirmación enviada con éxito!');
             },
             onError: () => {
@@ -60,7 +57,8 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
-                    {yaHaConfirmado ? (
+                    {/* BLOQUEO REAL: Si el servidor dice que ya confirmó, mostramos el mensaje */}
+                    {yaConfirmadoServer ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#6f7f60]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -81,7 +79,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                         </div>
                     ) : (
                         <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
-                            
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>
                                 <input
@@ -138,12 +135,11 @@ export default function Confirmacion({ yaConfirmadoServer }) {
 
                                     <div className="mb-8">
                                         <label className="block text-[#556b4e] font-medium">Alergias o restricciones</label>
-                                        <span className="block mb-3 text-xs text-gray-400 italic">Si alguien tiene alguna alergia, indícalo aquí (especificando su nombre).</span>
                                         <textarea
                                             value={data.intolerancias}
                                             onChange={e => setData('intolerancias', e.target.value)}
                                             rows="3"
-                                            placeholder="Ej: Lucia (Sin gluten), Roman (Sin lactosa)..."
+                                            placeholder="Ej: Lucia (Sin gluten)..."
                                             className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                         />
                                     </div>
@@ -156,7 +152,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                     value={data.mensaje}
                                     onChange={e => setData('mensaje', e.target.value)}
                                     rows="3"
-                                    placeholder="¡Cualquier cosa que nos queráis decir!"
                                     className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                 />
                             </div>
