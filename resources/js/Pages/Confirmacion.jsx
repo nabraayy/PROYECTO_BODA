@@ -7,8 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
     
-    // IMPORTANTE: Ya no usamos estado local para 'yaHaConfirmado'.
-    // Usamos directamente la prop 'yaConfirmadoServer' que viene del servidor.
+    // IMPORTANTE: Ya no usamos useState para el bloqueo.
+    // Usamos directamente 'yaConfirmadoServer'. Si es true, el formulario no se renderiza.
 
     const { data, setData, post, processing, reset } = useForm({
         nombre: '',
@@ -29,12 +29,11 @@ export default function Confirmacion({ yaConfirmadoServer }) {
         post('/confirmar-asistencia', {
             preserveScroll: true,
             onSuccess: () => {
-                // Inertia refresca las props automáticamente. 
-                // yaConfirmadoServer cambiará a true y la UI se actualizará sola.
+                // Al ser exitoso, el servidor actualiza 'yaConfirmadoServer' a true
                 toast.success('¡Confirmación enviada con éxito!');
             },
-            onError: () => {
-                toast.error('Hubo un error al enviar la confirmación');
+            onError: (errors) => {
+                toast.error(errors.error || 'Hubo un error al enviar la confirmación');
             }
         });
     };
@@ -57,7 +56,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
-                    {/* BLOQUEO REAL: Si el servidor dice que ya confirmó, mostramos el mensaje */}
+                    {/* LÓGICA DE BLOQUEO: Si el servidor confirma el registro, mostramos el éxito */}
                     {yaConfirmadoServer ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -78,6 +77,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             </div>
                         </div>
                     ) : (
+                        /* Si no hay confirmación, mostramos el formulario */
                         <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>
@@ -130,7 +130,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                             className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:border-[#6f7f60] resize-none"
                                             required={data.asistentes > 1}
                                         />
-                                        <p className="mt-2 text-[11px] text-gray-400">Separa los nombres por comas.</p>
                                     </div>
 
                                     <div className="mb-8">

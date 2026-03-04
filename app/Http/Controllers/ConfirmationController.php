@@ -8,6 +8,9 @@ use Inertia\Inertia;
 
 class ConfirmationController extends Controller
 {
+    /**
+     * Muestra el formulario o el mensaje de éxito basándose en la base de datos.
+     */
     public function index()
     {
         $yaConfirmado = false;
@@ -17,32 +20,37 @@ class ConfirmationController extends Controller
         }
 
         return Inertia::render('Confirmacion', [
-            // El casting a (bool) es vital para que React lo reciba correctamente
+            // El casting a (bool) garantiza que React reciba un true/false real
             'yaConfirmadoServer' => (bool)$yaConfirmado
         ]);
     }
 
+    /**
+     * Guarda la confirmación y bloquea envíos duplicados.
+     */
     public function store(Request $request)
     {
         $currentUserId = auth()->id();
 
-        // BLOQUEO: Si ya existe, abortamos.
+        // BLOQUEO DE SEGURIDAD: Si ya existe en la DB, abortamos para evitar duplicados.
         if (Confirmation::where('user_id', $currentUserId)->exists()) {
             return redirect()->back()->withErrors(['error' => 'Ya has enviado tu confirmación.']);
         }
 
+        // Validación de datos
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
+            'asistencia' => 'required|in:si,no',
             'asistentes' => 'nullable|integer|min:1',
             'nombres_asistentes' => 'nullable|string',
-            'asistencia' => 'required|in:si,no',
             'intolerancias' => 'nullable|string',
             'mensaje' => 'nullable|string',
         ]);
 
+        // Creación vinculada al usuario
         Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
 
-        // Al volver atrás, index() se ejecuta, detecta el registro y bloquea el Front
-        return redirect()->back();
+        // Al redirigir, Inertia vuelve a ejecutar index() y actualizará las props
+        return redirect()->back()->with('message', '¡Confirmación guardada!');
     }
 }
