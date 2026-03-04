@@ -2,34 +2,27 @@ import { Head, useForm } from '@inertiajs/react';
 import React from 'react';
 import NavBar from '@/Components/NavBar';
 import Footer from '@/Components/Footer';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
     
-    // El formulario solo se inicializa si yaConfirmadoServer es false.
-    // Usamos useForm de Inertia para manejar el envío.
     const { data, setData, post, processing } = useForm({
         nombre: '',
         asistencia: '',
         asistentes: 1,
-        nombres_asistentes: '', // <--- CAMPO RECUPERADO
+        nombres_asistentes: '',
         intolerancias: '',
         mensaje: '',
     });
 
     const submit = (e) => {
         e.preventDefault(); 
+        // Al hacer el post, NO ponemos toasts. 
+        // Confiamos en que al terminar, yaConfirmadoServer será true y cambiará la vista.
         post('/confirmar-asistencia', {
             preserveScroll: true,
             onSuccess: () => {
-                // Al tener éxito, Inertia refresca las props. 
-                // yaConfirmadoServer pasará a ser TRUE y el formulario desaparecerá solo.
-                toast.success('¡Confirmación enviada con éxito!');
+                // No hace falta hacer nada aquí, la magia la hace el yaConfirmadoServer
             },
-            onError: () => {
-                toast.error('Hubo un error. Revisa los datos.');
-            }
         });
     };
 
@@ -51,7 +44,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
-                    {/* BLOQUEO PERMANENTE: Si el servidor dice que ya existe registro */}
+                    {/* SI YA ESTÁ EN LA BD: Mostramos TU mensaje de éxito */}
                     {yaConfirmadoServer ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -74,22 +67,19 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             </div>
                         </div>
                     ) : (
-                        <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100">
-                            
-                            {/* Nombre del titular */}
+                        /* SI NO ESTÁ EN LA BD: Mostramos el formulario */
+                        <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>
                                 <input
                                     type="text"
                                     value={data.nombre}
                                     onChange={e => setData('nombre', e.target.value)}
-                                    placeholder="Nombre completo"
                                     className="w-full border border-gray-200 rounded-md px-4 py-3 focus:ring-1 focus:ring-[#6f7f60]"
                                     required
                                 />
                             </div>
 
-                            {/* Asistencia */}
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">¿Asistirás a la boda?</label>
                                 <select
@@ -104,7 +94,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                 </select>
                             </div>
 
-                            {/* Campos extra si asiste */}
                             {data.asistencia === 'si' && (
                                 <div className="animate-in slide-in-from-top-4 duration-500">
                                     <div className="mb-6">
@@ -119,7 +108,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                         />
                                     </div>
 
-                                    {/* CAMPO DE NOMBRES DE ACOMPAÑANTES */}
                                     <div className="mb-6 p-4 bg-[#f9faf8] rounded-md border border-[#e8ede4]">
                                         <label className="block mb-2 font-medium text-[#556b4e]">Nombres de los acompañantes</label>
                                         <textarea
@@ -137,16 +125,14 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                             value={data.intolerancias}
                                             onChange={e => setData('intolerancias', e.target.value)}
                                             rows="3"
-                                            placeholder="Indica si alguien tiene necesidades especiales..."
                                             className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none"
                                         />
                                     </div>
                                 </div>
                             )}
 
-                            {/* Mensaje final */}
                             <div className="mb-8">
-                                <label className="block mb-2 font-medium text-[#556b4e]">Un mensaje para nosotros</label>
+                                <label className="block mb-2 font-medium text-[#556b4e]">Mensaje para nosotros</label>
                                 <textarea
                                     value={data.mensaje}
                                     onChange={e => setData('mensaje', e.target.value)}
@@ -167,7 +153,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                 </div>
             </section>
             
-            <ToastContainer position="bottom-center" />
             <Footer />
         </>
     );
