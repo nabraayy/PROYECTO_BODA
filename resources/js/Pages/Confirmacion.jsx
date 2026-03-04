@@ -1,14 +1,14 @@
 import { Head, useForm } from '@inertiajs/react';
-import React, { useState, useEffect } from 'react'; // Añadimos useState y useEffect
+import React, { useState, useEffect } from 'react';
 import NavBar from '@/Components/NavBar';
 import Footer from '@/Components/Footer';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
     
-    // 1. Estado local que manda en la vista
+    // Estado para controlar la vista (Formulario o Mensaje)
     const [confirmado, setConfirmado] = useState(yaConfirmadoServer);
 
-    // 2. Si la prop cambia (por el servidor), actualizamos el estado local
+    // Sincronizar con el servidor si se recarga la página
     useEffect(() => {
         setConfirmado(yaConfirmadoServer);
     }, [yaConfirmadoServer]);
@@ -27,7 +27,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
         post('/confirmar-asistencia', {
             preserveScroll: true,
             onSuccess: () => {
-                // FORZAMOS el cambio de vista inmediatamente
+                // ESTO HACE QUE REACCIONE: Cambia la vista al mensaje de éxito inmediatamente
                 setConfirmado(true);
             },
         });
@@ -40,7 +40,10 @@ export default function Confirmacion({ yaConfirmadoServer }) {
 
             <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
                 <div className="max-w-4xl mx-auto">
-                    <h1 className="font-serif text-[2.8rem] text-[#556b4e]">Confirmación de asistencia</h1>
+                    <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">Confirmación</span>
+                    <h1 className="font-serif text-[2.8rem] md:text-[3.5rem] font-light text-[#556b4e] leading-tight">
+                        Confirmación de asistencia
+                    </h1>
                     <div className="mx-auto mt-10 h-px w-32 bg-[#9aaa8a] opacity-70" />
                 </div>
             </section>
@@ -48,8 +51,8 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
-                    {/* USAMOS EL ESTADO LOCAL PARA LA REACCIÓN INSTANTÁNEA */}
                     {confirmado ? (
+                        /* TU MENSAJE DE ÉXITO (Lo que querías que saltara) */
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#6f7f60]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,14 +74,17 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             </div>
                         </div>
                     ) : (
-                        <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100">
+                        /* FORMULARIO COMPLETO */
+                        <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
+                            
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>
                                 <input
                                     type="text"
                                     value={data.nombre}
                                     onChange={e => setData('nombre', e.target.value)}
-                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:ring-1 focus:ring-[#6f7f60]"
+                                    placeholder="Nombre completo"
+                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                     required
                                 />
                             </div>
@@ -88,7 +94,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                 <select
                                     value={data.asistencia}
                                     onChange={e => setData('asistencia', e.target.value)}
-                                    className="w-full border border-gray-200 rounded-md px-4 py-3"
+                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                     required
                                 >
                                     <option value="">Selecciona una opción</option>
@@ -100,30 +106,56 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             {data.asistencia === 'si' && (
                                 <div className="animate-in slide-in-from-top-4 duration-500">
                                     <div className="mb-6">
-                                        <label className="block mb-2 font-medium text-[#556b4e]">¿Cuántos vendréis?</label>
+                                        <label className="block mb-2 font-medium text-[#556b4e]">¿Cuántos vendréis en total?</label>
                                         <input
                                             type="number"
                                             min="1"
                                             value={data.asistentes}
                                             onChange={e => setData('asistentes', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-md px-4 py-3"
+                                            className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
+                                            required
                                         />
                                     </div>
-                                    <div className="mb-6">
-                                        <label className="block mb-2 font-medium text-[#556b4e]">Nombres de acompañantes</label>
+
+                                    <div className="mb-6 p-4 bg-[#f9faf8] rounded-md border border-[#e8ede4]">
+                                        <label className="block mb-2 font-medium text-[#556b4e]">Nombres de los acompañantes</label>
                                         <textarea
                                             value={data.nombres_asistentes}
                                             onChange={e => setData('nombres_asistentes', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-md px-4 py-3"
+                                            placeholder="Escribe quiénes vendrán contigo..."
+                                            rows="2"
+                                            className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:border-[#6f7f60]"
+                                        />
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <label className="block text-[#556b4e] font-medium">Alergias o intolerancias</label>
+                                        <textarea
+                                            value={data.intolerancias}
+                                            onChange={e => setData('intolerancias', e.target.value)}
+                                            rows="3"
+                                            placeholder="Indica si alguien tiene necesidades especiales..."
+                                            className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                         />
                                     </div>
                                 </div>
                             )}
 
+                            <div className="mb-8">
+                                <label className="block mb-2 font-medium text-[#556b4e]">Un mensaje para nosotros</label>
+                                <textarea
+                                    value={data.mensaje}
+                                    onChange={e => setData('mensaje', e.target.value)}
+                                    rows="3"
+                                    placeholder="Opcional..."
+                                    className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
+                                />
+                            </div>
+
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium hover:bg-[#5f6f52] transition-all"
+                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium tracking-wide hover:bg-[#5f6f52] transition-all shadow-md disabled:bg-gray-300"
                             >
                                 {processing ? 'Enviando...' : 'Confirmar ahora'}
                             </button>
