@@ -5,48 +5,44 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Confirmation; 
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
 
 class ConfirmationController extends Controller
 {
-    /**
-     * Aplicamos el middleware auth para que solo usuarios 
-     * registrados puedan ver o enviar el formulario.
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
-        // Ya no hace falta check() porque el middleware garantiza que está logueado
-        $yaConfirmado = Confirmation::where('user_id', Auth::id())->exists();
+        // Verificamos si ya existe el registro en la BD para el usuario logueado
+        $yaConfirmado = auth()->check() 
+            ? Confirmation::where('user_id', auth()->id())->exists() 
+            : false;
 
         return Inertia::render('Confirmacion', [
             'yaConfirmadoServer' => (bool)$yaConfirmado
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $currentUserId = Auth::id();
+    // ConfirmationController.php
 
-        if (Confirmation::where('user_id', $currentUserId)->exists()) {
-            return redirect()->back();
-        }
+public function store(Request $request)
+{
+    $currentUserId = auth()->id();
 
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'asistencia' => 'required|in:si,no',
-            'asistentes' => 'nullable|integer|min:1',
-            'nombres_asistentes' => 'nullable|string',
-            'intolerancias' => 'nullable|string',
-            'mensaje' => 'nullable|string',
-        ]);
-
-        Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
-
+    // Si ya existe, simplemente volvemos (esto refresca la página para el usuario)
+    if (Confirmation::where('user_id', $currentUserId)->exists()) {
         return redirect()->back();
     }
+
+    $validated = $request->validate([
+        'nombre' => 'required|string|max:255',
+        'asistencia' => 'required|in:si,no',
+        'asistentes' => 'nullable|integer|min:1',
+        'nombres_asistentes' => 'nullable|string',
+        'intolerancias' => 'nullable|string',
+        'mensaje' => 'nullable|string',
+    ]);
+
+    Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
+
+    // IMPORTANTE: Al volver atrás, Inertia refresca las props del componente automáticamente
+    return redirect()->back();
+}
 }
