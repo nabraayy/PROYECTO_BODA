@@ -29,24 +29,29 @@ class ConfirmationController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $currentUserId = Auth::id();
+{
+    // Si no está logueado por algún motivo, fuera.
+    if (!auth()->check()) return redirect()->route('login');
 
-        if (Confirmation::where('user_id', $currentUserId)->exists()) {
-            return redirect()->back();
-        }
+    $userId = auth()->id();
 
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'asistencia' => 'required|in:si,no',
-            'asistentes' => 'nullable|integer|min:1',
-            'nombres_asistentes' => 'nullable|string',
-            'intolerancias' => 'nullable|string',
-            'mensaje' => 'nullable|string',
-        ]);
-
-        Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
-
+    // Si ya existe, NO HACEMOS NADA, solo volvemos. 
+    // Esto quita el error 500 de "duplicado"
+    if (\App\Models\Confirmation::where('user_id', $userId)->exists()) {
         return redirect()->back();
     }
+
+    // Guardado ultra-seguro (si un campo falla, no rompe el resto)
+    \App\Models\Confirmation::create([
+        'user_id'            => $userId,
+        'nombre'             => $request->nombre,
+        'asistencia'         => $request->asistencia,
+        'asistentes'         => $request->asistentes ?? 1,
+        'nombres_asistentes' => $request->nombres_asistentes ?? '',
+        'intolerancias'      => $request->intolerancias ?? '',
+        'mensaje'            => $request->mensaje ?? '',
+    ]);
+
+    return redirect()->back();
+}
 }

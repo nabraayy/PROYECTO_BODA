@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\GaleriaController;
 use App\Http\Controllers\ConfirmationController;
+
 use App\Http\Controllers\DashboardController;
 
-// --- PÁGINAS PÚBLICAS ---
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -18,43 +18,39 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/nuestra-historia', function () {
-    return Inertia::render('NuestraHistoria');
-})->name('nuestra.historia');
 
-// --- PÁGINAS QUE REQUIEREN LOGIN ---
-Route::middleware(['auth'])->group(function () {
-    
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
-    // Welcome para logueados
-    Route::get('/welcome', function() {
-        return Inertia::render('Welcome');
-    })->name('welcome');
 
-    // --- SECCIÓN CONFIRMACIÓN ---
-    // Mantenemos tu estructura original pero pasando la variable 'yaConfirmadoServer'
-    Route::get('/confirmar', function () {
-        $yaConfirmado = \App\Models\Confirmation::where('user_id', auth()->id())->exists();
-        
-        return Inertia::render('Confirmacion', [
-            'yaConfirmadoServer' => (bool)$yaConfirmado
-        ]);
-    })->name('confirmar.asistencia');
+Route::get('/welcome', function() {
+    return Inertia::render('Welcome'); // Página de bienvenida para usuarios comunes
+})->name('welcome');
 
-    // Ruta POST para guardar (apunta a tu controlador)
-    Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia.store');
 
-    // --- GALERÍA ---
-    Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
-    Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
-    Route::get('download-link/{filename}', [GaleriaController::class, 'getDownloadLink']);
-
-    // --- PERFIL ---
+Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/nuestra-historia', function () {
+    return Inertia::render('NuestraHistoria');
+})->name('nuestra.historia');
+
+Route::get('/confirmar', function () {
+    $yaConfirmado = false;
+    if (auth()->check()) {
+        $yaConfirmado = \App\Models\Confirmation::where('user_id', auth()->id())->exists();
+    }
+    return Inertia::render('Confirmacion', [
+        'yaConfirmadoServer' => $yaConfirmado
+    ]);
+})->name('confirmar.asistencia');
+
+Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia.store');
+
+Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index');
+Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
+Route::get('download-link/{filename}', [GaleriaController::class, 'getDownloadLink']);
 
 require __DIR__.'/auth.php';
