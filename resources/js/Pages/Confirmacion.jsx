@@ -2,34 +2,38 @@ import { Head, useForm } from '@inertiajs/react';
 import React, { useState, useEffect } from 'react';
 import NavBar from '@/Components/NavBar';
 import Footer from '@/Components/Footer';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
-    
-    // Estado para controlar la vista (Formulario o Mensaje)
-    const [confirmado, setConfirmado] = useState(yaConfirmadoServer);
+    // Si yaConfirmadoServer es true, el estado inicial será true y el formulario NO se renderizará
+    const [yaHaConfirmado, setYaHaConfirmado] = useState(yaConfirmadoServer);
 
-    // Sincronizar con el servidor si se recarga la página
-    useEffect(() => {
-        setConfirmado(yaConfirmadoServer);
-    }, [yaConfirmadoServer]);
-
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, reset } = useForm({
         nombre: '',
+        asistentes: '',
         asistencia: '',
-        asistentes: 1,
-        nombres_asistentes: '',
         intolerancias: '',
         mensaje: '',
     });
 
+    // Mantenemos sincronizado el estado con lo que diga el servidor
+    useEffect(() => {
+        setYaHaConfirmado(yaConfirmadoServer);
+    }, [yaConfirmadoServer]);
+
     const submit = (e) => {
         e.preventDefault(); 
         post('/confirmar-asistencia', {
-            preserveScroll: true,
             onSuccess: () => {
-                // ESTO HACE QUE REACCIONE: Cambia la vista al mensaje de éxito inmediatamente
-                setConfirmado(true);
+                // Tras el éxito, bloqueamos el formulario y mostramos el mensaje
+                setYaHaConfirmado(true);
+                reset();
+                toast.success('¡Confirmación enviada con éxito!');
             },
+            onError: () => {
+                toast.error('Hubo un error al enviar la confirmación');
+            }
         });
     };
 
@@ -38,9 +42,12 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <Head title="Confirmar asistencia" />
             <NavBar />
 
+            {/* Cabecera común */}
             <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
                 <div className="max-w-4xl mx-auto">
-                    <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">Confirmación</span>
+                    <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">
+                        Confirmación
+                    </span>
                     <h1 className="font-serif text-[2.8rem] md:text-[3.5rem] font-light text-[#556b4e] leading-tight">
                         Confirmación de asistencia
                     </h1>
@@ -51,40 +58,47 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
-                    {confirmado ? (
-                        /* TU MENSAJE DE ÉXITO (Lo que querías que saltara) */
+                    {/* CONDICIONAL PRINCIPAL: Si ya confirmó, mostramos mensaje. Si no, mostramos formulario */}
+                    {yaHaConfirmado ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#6f7f60]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
+                            
                             <h2 className="font-serif text-3xl text-[#556b4e] mb-4">¡Asistencia confirmada!</h2>
+                            
                             <p className="text-gray-600 mb-10 leading-relaxed">
-                                Ya hemos recibido vuestra respuesta. Vuestros asientos ya están reservados en nuestra lista.
+                                Ya hemos recibido vuestra respuesta. No es necesario que hagáis nada más, vuestros asientos ya están reservados en nuestra lista.
                             </p>
 
-                            <div className="bg-[#f8faf7] border border-[#dce6d4] rounded-lg p-6 text-center">
-                                <p className="text-[10px] text-[#7a8a70] uppercase tracking-widest mb-3 font-bold">¿Necesitas cambiar algo?</p>
-                                <p className="text-gray-600 text-sm mb-6">Si te has equivocado o hay algún imprevisto, contacta con nosotros:</p>
-                                <div className="space-y-2 text-[#556b4e] font-bold text-lg">
-                                    <p>Lucia: 608 41 90 71</p>
-                                    <p>Roman: 602 24 65 35</p>
+                            <div className="bg-[#f5f7f3] p-6 rounded-lg border border-[#dce6d4] text-left">
+                                <p className="text-[10px] text-[#7a8a70] uppercase tracking-widest mb-3 font-bold text-center">¿Necesitas hacer algún cambio?</p>
+                                <p className="text-gray-600 text-sm mb-4 text-center">
+                                    Si te has equivocado o necesitas avisarnos de algo nuevo, escríbenos:
+                                </p>
+                                <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-[#556b4e] font-bold text-lg">
+                                    <span>Lucia: 608 41 90 71</span>
+                                    <span className="hidden md:inline opacity-30">|</span>
+                                    <span>Roman: 602 24 65 35</span>
                                 </div>
                             </div>
                         </div>
                     ) : (
-                        /* FORMULARIO COMPLETO */
-                        <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
-                            
+                        <form
+                            onSubmit={submit}
+                            className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700"
+                        >
+                            {/* ... (Resto de los campos del formulario que ya tenías) ... */}
                             <div className="mb-6">
-                                <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>
+                                <label className="block mb-2 font-medium text-[#556b4e]">Nombre y apellidos</label>
                                 <input
                                     type="text"
                                     value={data.nombre}
                                     onChange={e => setData('nombre', e.target.value)}
-                                    placeholder="Nombre completo"
-                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
+                                    placeholder="Introduce tu nombre completo"
+                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60] focus:border-[#6f7f60] transition-all"
                                     required
                                 />
                             </div>
@@ -106,35 +120,26 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             {data.asistencia === 'si' && (
                                 <div className="animate-in slide-in-from-top-4 duration-500">
                                     <div className="mb-6">
-                                        <label className="block mb-2 font-medium text-[#556b4e]">¿Cuántos vendréis en total?</label>
+                                        <label className="block mb-2 font-medium text-[#556b4e]">Número de asistentes</label>
                                         <input
                                             type="number"
                                             min="1"
                                             value={data.asistentes}
                                             onChange={e => setData('asistentes', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
+                                            className="w-full border border-gray-200 rounded-md px-4 py-3"
                                             required
                                         />
                                     </div>
-
-                                    <div className="mb-6 p-4 bg-[#f9faf8] rounded-md border border-[#e8ede4]">
-                                        <label className="block mb-2 font-medium text-[#556b4e]">Nombres de los acompañantes</label>
-                                        <textarea
-                                            value={data.nombres_asistentes}
-                                            onChange={e => setData('nombres_asistentes', e.target.value)}
-                                            placeholder="Escribe quiénes vendrán contigo..."
-                                            rows="2"
-                                            className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:border-[#6f7f60]"
-                                        />
-                                    </div>
-
-                                    <div className="mb-6">
-                                        <label className="block text-[#556b4e] font-medium">Alergias o intolerancias</label>
+                                    <div className="mb-8">
+                                        <label className="block text-[#556b4e] font-medium">¿Alguna intolerancia o restricción alimentaria?</label>
+                                        <span className="block mb-3 text-xs text-gray-400 italic">
+                                            Si no tienes ninguna, puedes dejar este campo en blanco.
+                                        </span>
                                         <textarea
                                             value={data.intolerancias}
                                             onChange={e => setData('intolerancias', e.target.value)}
                                             rows="3"
-                                            placeholder="Indica si alguien tiene necesidades especiales..."
+                                            placeholder="Ej: Celíaco, alérgico a los frutos secos..."
                                             className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                         />
                                     </div>
@@ -142,12 +147,12 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             )}
 
                             <div className="mb-8">
-                                <label className="block mb-2 font-medium text-[#556b4e]">Un mensaje para nosotros</label>
+                                <label className="block mb-2 font-medium text-[#556b4e]">¿Quieres dejarnos un mensaje?</label>
                                 <textarea
                                     value={data.mensaje}
                                     onChange={e => setData('mensaje', e.target.value)}
-                                    rows="3"
-                                    placeholder="Opcional..."
+                                    rows="4"
+                                    placeholder="Opcional: Dedicatoria, canción que no puede faltar..."
                                     className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                 />
                             </div>
@@ -155,15 +160,16 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium tracking-wide hover:bg-[#5f6f52] transition-all shadow-md disabled:bg-gray-300"
+                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium tracking-wide hover:bg-[#5f6f52] transition-all shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed"
                             >
-                                {processing ? 'Enviando...' : 'Confirmar ahora'}
+                                {processing ? 'Enviando confirmación...' : 'Confirmar asistencia'}
                             </button>
                         </form>
                     )}
                 </div>
             </section>
             
+            <ToastContainer position="bottom-center" />
             <Footer />
         </>
     );

@@ -38,13 +38,7 @@ Route::get('/nuestra-historia', function () {
 })->name('nuestra.historia');
 
 Route::get('/confirmar', function () {
-    $yaConfirmado = false;
-    if (auth()->check()) {
-        $yaConfirmado = \App\Models\Confirmation::where('user_id', auth()->id())->exists();
-    }
-    return Inertia::render('Confirmacion', [
-        'yaConfirmadoServer' => $yaConfirmado
-    ]);
+    return Inertia::render('Confirmacion');
 })->name('confirmar.asistencia');
 
 Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia.store');
