@@ -23,24 +23,15 @@ export default function Confirmacion({ yaConfirmadoServer }) {
     });
 
     const submit = (e) => {
-    e.preventDefault(); 
-    
-    post('/confirmar-asistencia', {
-        preserveScroll: true,
-        onSuccess: () => {
-            setConfirmado(true);
-        },
-        onError: () => {
-            // Si salta el error 500 pero los datos se enviaron,
-            // forzamos la vista de los teléfonos.
-            setConfirmado(true);
-        },
-        onFinish: () => {
-            // Pase lo que pase, al terminar, el usuario no debe ver el formulario roto
-            setConfirmado(true);
-        }
-    });
-};
+        e.preventDefault(); 
+        post('/confirmar-asistencia', {
+            preserveScroll: true,
+            onSuccess: () => {
+                // ESTO HACE QUE REACCIONE: Cambia la vista al mensaje de éxito inmediatamente
+                setConfirmado(true);
+            },
+        });
+    };
 
     return (
         <>
