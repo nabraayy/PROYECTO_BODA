@@ -32,6 +32,7 @@ class ConfirmationController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'asistentes' => 'nullable|integer|min:1',
+            'nombres_asistentes' => 'nullable|string',
             'asistencia' => 'required|in:si,no',
             'intolerancias' => 'nullable|string',
             'mensaje' => 'nullable|string',

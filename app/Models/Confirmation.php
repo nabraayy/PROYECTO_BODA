@@ -16,6 +16,7 @@ class Confirmation extends Model
         'user_id',
         'nombre',
         'asistentes',
+        'nombres_asistentes',
         'asistencia',
         'intolerancias',
         'mensaje',
