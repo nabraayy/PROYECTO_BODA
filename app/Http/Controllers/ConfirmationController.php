@@ -9,10 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ConfirmationController extends Controller
 {
-    /**
-     * Aplicamos el middleware auth para que solo usuarios 
-     * registrados puedan ver o enviar el formulario.
-     */
     public function __construct()
     {
         $this->middleware('auth');
@@ -20,7 +16,6 @@ class ConfirmationController extends Controller
 
     public function index()
     {
-        // Ya no hace falta check() porque el middleware garantiza que está logueado
         $yaConfirmado = Confirmation::where('user_id', Auth::id())->exists();
 
         return Inertia::render('Confirmacion', [
@@ -32,20 +27,28 @@ class ConfirmationController extends Controller
     {
         $currentUserId = Auth::id();
 
+        // --- SOLUCIÓN AL ERROR 500 ---
+        // Si el usuario ya existe, no intentamos validar ni crear nada.
+        // Simplemente redirigimos atrás. 
+        // Al llegar al Front, 'yaConfirmadoServer' será true y saltará TU mensaje.
         if (Confirmation::where('user_id', $currentUserId)->exists()) {
             return redirect()->back();
         }
 
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'asistencia' => 'required|in:si,no',
-            'asistentes' => 'nullable|integer|min:1',
+            'nombre'             => 'required|string|max:255',
+            'asistencia'         => 'required|in:si,no',
+            'asistentes'         => 'nullable|integer|min:1',
             'nombres_asistentes' => 'nullable|string',
-            'intolerancias' => 'nullable|string',
-            'mensaje' => 'nullable|string',
+            'intolerancias'      => 'nullable|string',
+            'mensaje'            => 'nullable|string',
         ]);
 
-        Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
+        // Usamos updateOrCreate por seguridad extra para evitar duplicados en el último segundo
+        Confirmation::updateOrCreate(
+            ['user_id' => $currentUserId],
+            $validated
+        );
 
         return redirect()->back();
     }
