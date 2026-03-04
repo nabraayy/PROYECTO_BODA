@@ -66,25 +66,28 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                         </div>
                     </div>
 
-                    {/* TABLA: Configurada para ver TODO sin cortes */}
+                    {/* TABLA: Actualizada con columna de Acompañantes */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300">
+                        <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-[#dce6d4]">
                                     <tr>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
-                                            Nombre Invitado
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Titular
                                         </th>
-                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
                                             Estado
                                         </th>
-                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
                                             Pax
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Acompañantes
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
                                             Alergias / Intolerancias
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold whitespace-nowrap">
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
                                             Mensaje
                                         </th>
                                     </tr>
@@ -94,30 +97,41 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                                     {filteredConfirmations.length > 0 ? (
                                         filteredConfirmations.map((c, index) => (
                                             <tr key={index} className="hover:bg-[#f5f7f3] transition-colors align-top">
-                                                {/* Nombre */}
-                                                <td className="px-4 py-4 min-w-[150px]">
+                                                {/* Nombre Titular */}
+                                                <td className="px-4 py-4 min-w-[140px]">
                                                     <div className="text-sm font-bold text-gray-900">{c.nombre}</div>
                                                     <div className="text-[10px] text-gray-400">{c.user?.email || '—'}</div>
                                                 </td>
 
                                                 {/* Asistencia */}
-                                                <td className="px-4 py-4 text-center min-w-[100px]">
+                                                <td className="px-4 py-4 text-center">
                                                     {c.asistencia === 'si' ? (
-                                                        <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Si</span>
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Si</span>
                                                     ) : (
-                                                        <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">No</span>
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">No</span>
                                                     )}
                                                 </td>
 
-                                                {/* Personas */}
-                                                <td className="px-4 py-4 text-center font-bold text-gray-600">
-                                                    {c.asistentes ?? '—'}
+                                                {/* Número total */}
+                                                <td className="px-4 py-4 text-center font-bold text-gray-700">
+                                                    {c.asistentes || 1}
                                                 </td>
 
-                                                {/* Intolerancias: Texto completo y resaltado */}
-                                                <td className="px-4 py-4 min-w-[250px] whitespace-normal">
+                                                {/* NUEVA COLUMNA: Nombres de acompañantes */}
+                                                <td className="px-4 py-4 min-w-[180px]">
+                                                    {c.nombres_asistentes ? (
+                                                        <div className="text-sm text-gray-700 leading-snug whitespace-pre-line">
+                                                            {c.nombres_asistentes}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-300 italic text-xs">—</span>
+                                                    )}
+                                                </td>
+
+                                                {/* Alergias resaltadas */}
+                                                <td className="px-4 py-4 min-w-[200px]">
                                                     {c.intolerancias ? (
-                                                        <div className="text-sm text-orange-800 bg-orange-50 p-2 rounded border border-orange-100 leading-relaxed italic">
+                                                        <div className="text-sm text-orange-900 bg-orange-50 p-2 rounded border border-orange-100 italic">
                                                             {c.intolerancias}
                                                         </div>
                                                     ) : (
@@ -125,16 +139,16 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
                                                     )}
                                                 </td>
 
-                                                {/* Mensaje: Texto completo */}
-                                                <td className="px-4 py-4 min-w-[250px] whitespace-normal text-sm text-gray-600 leading-relaxed italic">
+                                                {/* Mensaje */}
+                                                <td className="px-4 py-4 min-w-[200px] text-sm text-gray-600 italic leading-relaxed">
                                                     {c.mensaje || <span className="text-gray-300">—</span>}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan="5" className="px-4 py-10 text-center text-gray-400 italic">
-                                                No hay resultados.
+                                            <td colSpan="6" className="px-4 py-10 text-center text-gray-400 italic">
+                                                No hay resultados que coincidan con la búsqueda.
                                             </td>
                                         </tr>
                                     )}
