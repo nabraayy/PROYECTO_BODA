@@ -5,27 +5,30 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Confirmation; 
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
 
 class ConfirmationController extends Controller
 {
+    /**
+     * Muestra el formulario y comprueba si el usuario ya confirmó
+     */
     public function index()
-{
-    $confirmacionExistente = \App\Models\Confirmation::where('user_id', auth()->id())->exists();
-
-    return Inertia::render('Confirmacion', [
-        // Convertimos a booleano real (true/false)
-        'yaConfirmadoServer' => (bool)$confirmacionExistente 
-    ]);
-}
-
-    public function store(Request $request)
     {
-        // 2. Seguridad extra: Si ya existe, no dejamos que guarde nada nuevo
-        if (Confirmation::where('user_id', Auth::id())->exists()) {
-            return redirect()->back()->with('error', 'Ya has enviado tu confirmación.');
+        // Comprobamos si el usuario actual ya tiene una fila en la tabla de confirmaciones
+        $yaConfirmado = false;
+        if (auth()->check()) {
+            $yaConfirmado = Confirmation::where('user_id', auth()->id())->exists();
         }
 
+        return Inertia::render('Confirmacion', [
+            'yaConfirmadoServer' => $yaConfirmado
+        ]);
+    }
+
+    /**
+     * Guarda o actualiza la confirmación
+     */
+    public function store(Request $request)
+    {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'asistentes' => 'nullable|integer|min:1',
@@ -35,8 +38,18 @@ class ConfirmationController extends Controller
             'mensaje' => 'nullable|string',
         ]);
 
-        // 3. Guardamos asegurando que el user_id se incluya
-        Confirmation::create(array_merge($validated, ['user_id' => Auth::id()]));
+        $user = auth()->user();
+
+        // Buscar si ya existe para este usuario
+        $confirmation = Confirmation::where('user_id', $user->id)->first();
+
+        if ($confirmation) {
+            // Si ya existe, actualizamos los datos
+            $confirmation->update($validated);
+        } else {
+            // Si no existe, creamos uno nuevo asociando el user_id
+            Confirmation::create(array_merge($validated, ['user_id' => $user->id]));
+        }
 
         return redirect()->back()->with('message', 'Confirmación procesada correctamente');
     }
