@@ -9,27 +9,23 @@ use Illuminate\Support\Facades\Auth;
 
 class ConfirmationController extends Controller
 {
-    /**
-     * Muestra el formulario y comprueba si el usuario ya confirmó
-     */
     public function index()
     {
-        // Forzamos la comprobación directa en la DB para que al recargar sea infalible
+        // 1. Miramos si el usuario está logueado y si YA tiene una confirmación
+        $user = Auth::user();
         $yaConfirmado = false;
-        
-        if (Auth::check()) {
-            $yaConfirmado = Confirmation::where('user_id', Auth::id())->exists();
+
+        if ($user) {
+            // Buscamos en la tabla 'confirmations' si existe su user_id
+            $yaConfirmado = Confirmation::where('user_id', $user->id)->exists();
         }
 
+        // 2. Pasamos el resultado exacto al Frontend
         return Inertia::render('Confirmacion', [
-            // Mandamos el valor booleano puro al frontend
             'yaConfirmadoServer' => (bool) $yaConfirmado
         ]);
     }
 
-    /**
-     * Guarda o actualiza la confirmación
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -41,11 +37,15 @@ class ConfirmationController extends Controller
             'mensaje' => 'nullable|string',
         ]);
 
+        // Guardamos usando el ID del usuario autenticado
+        // Esto sobreescribe si ya existe o crea uno nuevo si no
         Confirmation::updateOrCreate(
             ['user_id' => Auth::id()],
             $validated
         );
 
+        // IMPORTANTE: Al hacer redirect back, Inertia vuelve a ejecutar el método index()
+        // y mandará el nuevo valor de 'yaConfirmadoServer' (que ahora será true)
         return redirect()->back();
     }
 }
