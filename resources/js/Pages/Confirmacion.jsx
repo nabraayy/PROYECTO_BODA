@@ -23,27 +23,20 @@ export default function Confirmacion({ yaConfirmadoServer }) {
         mensaje: '',
     });
 
-    const submit = (e) => {
-        e.preventDefault(); 
-        
-        post('/confirmar-asistencia', {
-            preserveScroll: true,
-            onSuccess: () => {
-                setConfirmado(true);
-                reset(); // Limpiamos el formulario tras el éxito
-            },
-            onError: () => {
-                // Si el servidor da error (ej. porque ya existe), 
-                // forzamos la vista de confirmación para evitar el bloqueo del usuario
-                setConfirmado(true);
-            },
-            onFinish: () => {
-                // Garantizamos que si el controlador hizo el redirect back por existir,
-                // la vista se actualice
-                if (yaConfirmadoServer) setConfirmado(true);
-            }
-        });
-    };
+   const submit = (e) => {
+    e.preventDefault(); 
+    post('/confirmar-asistencia', {
+        preserveScroll: true,
+        onSuccess: () => {
+            setConfirmado(true);
+        },
+        onFinish: () => {
+            // Esto es vital: si el servidor vuelve (aunque sea por duplicado), 
+            // reactivamos la lógica visual de "Confirmado"
+            setConfirmado(true);
+        }
+    });
+};
 
     return (
         <>

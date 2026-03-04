@@ -22,21 +22,28 @@ Route::get('/nuestra-historia', function () {
     return Inertia::render('NuestraHistoria');
 })->name('nuestra.historia');
 
-// --- PÁGINAS PROTEGIDAS (REQUIEREN LOGIN) ---
+// --- PÁGINAS QUE REQUIEREN LOGIN ---
 Route::middleware(['auth'])->group(function () {
     
-    // Dashboard principal
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Ruta de bienvenida alternativa
+    // Welcome para logueados
     Route::get('/welcome', function() {
         return Inertia::render('Welcome');
     })->name('welcome');
 
-    // --- SECCIÓN DE CONFIRMACIÓN (Aquí estaba el cambio) ---
-    // Ahora usamos el controlador para el GET, así cargará la variable 'yaConfirmadoServer'
-    Route::get('/confirmar', [ConfirmationController::class, 'index'])->name('confirmar.asistencia');
-    // El POST para guardar la confirmación
+    // --- SECCIÓN CONFIRMACIÓN ---
+    // Mantenemos tu estructura original pero pasando la variable 'yaConfirmadoServer'
+    Route::get('/confirmar', function () {
+        $yaConfirmado = \App\Models\Confirmation::where('user_id', auth()->id())->exists();
+        
+        return Inertia::render('Confirmacion', [
+            'yaConfirmadoServer' => (bool)$yaConfirmado
+        ]);
+    })->name('confirmar.asistencia');
+
+    // Ruta POST para guardar (apunta a tu controlador)
     Route::post('/confirmar-asistencia', [ConfirmationController::class, 'store'])->name('confirmar.asistencia.store');
 
     // --- GALERÍA ---
@@ -44,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
     Route::get('download-link/{filename}', [GaleriaController::class, 'getDownloadLink']);
 
-    // --- PERFIL DE USUARIO ---
+    // --- PERFIL ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
