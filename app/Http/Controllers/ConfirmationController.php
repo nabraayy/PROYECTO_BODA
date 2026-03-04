@@ -10,20 +10,12 @@ use Illuminate\Support\Facades\Auth;
 class ConfirmationController extends Controller
 {
     public function index()
-    {
-        // 1. Verificamos si el usuario ya tiene una fila en la tabla
-        $user = Auth::user();
-        $yaConfirmado = false;
-
-        if ($user) {
-            // Buscamos específicamente por el ID del usuario logueado
-            $yaConfirmado = Confirmation::where('user_id', $user->id)->exists();
-        }
-
-        return Inertia::render('Confirmacion', [
-            'yaConfirmadoServer' => (bool)$yaConfirmado
-        ]);
-    }
+{
+    return Inertia::render('Confirmacion', [
+        // Forzamos el booleano para evitar que React reciba null o 1/0
+        'yaConfirmadoServer' => Confirmation::where('user_id', auth()->id())->exists()
+    ]);
+}
 
     public function store(Request $request)
     {
