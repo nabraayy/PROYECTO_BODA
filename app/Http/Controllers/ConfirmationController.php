@@ -32,12 +32,14 @@ class ConfirmationController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'asistentes' => 'nullable|integer|min:1',
-            'nombres_asistentes' => 'nullable|string',
+            'nombres_asistentes' => 'nullable|array',
+            'nombres_asistentes.*' => 'string|max:255',
             'asistencia' => 'required|in:si,no',
             'intolerancias' => 'nullable|string',
             'mensaje' => 'nullable|string',
         ]);
 
+        $validated['nombres_asistentes'] = json_encode($validated['nombres_asistentes'] ?? []);
         $user = auth()->user();
 
         // Buscar si ya existe para este usuario
