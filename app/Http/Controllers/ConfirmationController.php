@@ -20,30 +20,29 @@ class ConfirmationController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        $currentUserId = auth()->id();
+    // ConfirmationController.php
 
-        // BLOQUEO: Si ya existe, volvemos atrás. 
-        // Al volver, 'index' se ejecuta, ve que existe y el Front muestra el mensaje de éxito.
-        if (Confirmation::where('user_id', $currentUserId)->exists()) {
-            return redirect()->back();
-        }
+public function store(Request $request)
+{
+    $currentUserId = auth()->id();
 
-        // Validación incluyendo el campo que faltaba: nombres_asistentes
-        $validated = $request->validate([
-            'nombre'             => 'required|string|max:255',
-            'asistencia'         => 'required|in:si,no',
-            'asistentes'         => 'nullable|integer|min:1',
-            'nombres_asistentes' => 'nullable|string', // <--- El campo que faltaba
-            'intolerancias'      => 'nullable|string',
-            'mensaje'            => 'nullable|string',
-        ]);
-
-        // Guardamos todo junto con el ID del usuario
-        Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
-
-        // Redirigimos al mismo sitio para que Inertia refresque las props (yaConfirmadoServer pasará a true)
+    // Si ya existe, simplemente volvemos (esto refresca la página para el usuario)
+    if (Confirmation::where('user_id', $currentUserId)->exists()) {
         return redirect()->back();
     }
+
+    $validated = $request->validate([
+        'nombre' => 'required|string|max:255',
+        'asistencia' => 'required|in:si,no',
+        'asistentes' => 'nullable|integer|min:1',
+        'nombres_asistentes' => 'nullable|string',
+        'intolerancias' => 'nullable|string',
+        'mensaje' => 'nullable|string',
+    ]);
+
+    Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
+
+    // IMPORTANTE: Al volver atrás, Inertia refresca las props del componente automáticamente
+    return redirect()->back();
+}
 }
