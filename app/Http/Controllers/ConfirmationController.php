@@ -8,49 +8,42 @@ use Inertia\Inertia;
 
 class ConfirmationController extends Controller
 {
-    /**
-     * Muestra el formulario o el mensaje de éxito basándose en la base de datos.
-     */
     public function index()
     {
-        $yaConfirmado = false;
-        if (auth()->check()) {
-            // Buscamos si existe el registro para el usuario logueado
-            $yaConfirmado = Confirmation::where('user_id', auth()->id())->exists();
-        }
+        // Verificamos si ya existe el registro en la BD para el usuario logueado
+        $yaConfirmado = auth()->check() 
+            ? Confirmation::where('user_id', auth()->id())->exists() 
+            : false;
 
         return Inertia::render('Confirmacion', [
-            // El casting a (bool) garantiza que React reciba un true/false real
             'yaConfirmadoServer' => (bool)$yaConfirmado
         ]);
     }
 
-    /**
-     * Guarda la confirmación y bloquea envíos duplicados.
-     */
     public function store(Request $request)
     {
         $currentUserId = auth()->id();
 
-        // BLOQUEO DE SEGURIDAD: Si ya existe en la DB, abortamos para evitar duplicados.
+        // BLOQUEO: Si ya existe, volvemos atrás. 
+        // Al volver, 'index' se ejecuta, ve que existe y el Front muestra el mensaje de éxito.
         if (Confirmation::where('user_id', $currentUserId)->exists()) {
-            return redirect()->back()->withErrors(['error' => 'Ya has enviado tu confirmación.']);
+            return redirect()->back();
         }
 
-        // Validación de datos
+        // Validación incluyendo el campo que faltaba: nombres_asistentes
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'asistencia' => 'required|in:si,no',
-            'asistentes' => 'nullable|integer|min:1',
-            'nombres_asistentes' => 'nullable|string',
-            'intolerancias' => 'nullable|string',
-            'mensaje' => 'nullable|string',
+            'nombre'             => 'required|string|max:255',
+            'asistencia'         => 'required|in:si,no',
+            'asistentes'         => 'nullable|integer|min:1',
+            'nombres_asistentes' => 'nullable|string', // <--- El campo que faltaba
+            'intolerancias'      => 'nullable|string',
+            'mensaje'            => 'nullable|string',
         ]);
 
-        // Creación vinculada al usuario
+        // Guardamos todo junto con el ID del usuario
         Confirmation::create(array_merge($validated, ['user_id' => $currentUserId]));
 
-        // Al redirigir, Inertia vuelve a ejecutar index() y actualizará las props
-        return redirect()->back()->with('message', '¡Confirmación guardada!');
+        // Redirigimos al mismo sitio para que Inertia refresque las props (yaConfirmadoServer pasará a true)
+        return redirect()->back();
     }
 }
