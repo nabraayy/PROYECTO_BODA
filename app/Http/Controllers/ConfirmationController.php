@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Confirmation; 
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class ConfirmationController extends Controller
 {
@@ -13,14 +14,16 @@ class ConfirmationController extends Controller
      */
     public function index()
     {
-        // Comprobamos si el usuario actual ya tiene una fila en la tabla de confirmaciones
+        // Forzamos la comprobación directa en la DB para que al recargar sea infalible
         $yaConfirmado = false;
-        if (auth()->check()) {
-            $yaConfirmado = Confirmation::where('user_id', auth()->id())->exists();
+        
+        if (Auth::check()) {
+            $yaConfirmado = Confirmation::where('user_id', Auth::id())->exists();
         }
 
         return Inertia::render('Confirmacion', [
-            'yaConfirmadoServer' => $yaConfirmado
+            // Mandamos el valor booleano puro al frontend
+            'yaConfirmadoServer' => (bool) $yaConfirmado
         ]);
     }
 
@@ -38,19 +41,11 @@ class ConfirmationController extends Controller
             'mensaje' => 'nullable|string',
         ]);
 
-        $user = auth()->user();
+        Confirmation::updateOrCreate(
+            ['user_id' => Auth::id()],
+            $validated
+        );
 
-        // Buscar si ya existe para este usuario
-        $confirmation = Confirmation::where('user_id', $user->id)->first();
-
-        if ($confirmation) {
-            // Si ya existe, actualizamos los datos
-            $confirmation->update($validated);
-        } else {
-            // Si no existe, creamos uno nuevo asociando el user_id
-            Confirmation::create(array_merge($validated, ['user_id' => $user->id]));
-        }
-
-        return redirect()->back()->with('message', 'Confirmación procesada correctamente');
+        return redirect()->back();
     }
 }

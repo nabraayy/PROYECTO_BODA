@@ -6,35 +6,38 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function Confirmacion({ yaConfirmadoServer }) {
+    // Sincronizamos el estado inicial directamente con la prop del servidor
     const [yaHaConfirmado, setYaHaConfirmado] = useState(yaConfirmadoServer);
 
     const { data, setData, post, processing, reset } = useForm({
-        nombre: '', // Nombre del titular de la cuenta
-        asistentes: 1, // Por defecto al menos 1
-        nombres_asistentes: '', // Guardaremos aquí los nombres como texto
+        nombre: '',
+        asistentes: 1,
+        nombres_asistentes: '',
         asistencia: '',
         intolerancias: '',
         mensaje: '',
     });
 
-    // Sincronización con el servidor
+    // Este efecto asegura que si el servidor cambia la prop (tras el éxito del POST),
+    // la vista cambie automáticamente al mensaje de éxito.
     useEffect(() => {
         setYaHaConfirmado(yaConfirmadoServer);
     }, [yaConfirmadoServer]);
 
-    // Función para manejar el cambio de número y preparar los campos de nombres
     const handleAsistentesChange = (e) => {
-        const num = parseInt(e.target.value);
+        const num = parseInt(e.target.value) || 1;
         setData('asistentes', num);
     };
 
     const submit = (e) => {
         e.preventDefault(); 
         post('/confirmar-asistencia', {
+            preserveScroll: true, // Mantiene la posición del scroll
             onSuccess: () => {
-                setYaHaConfirmado(true);
-                reset();
+                // No necesitamos setYaHaConfirmado(true) aquí porque el useEffect 
+                // reaccionará cuando Inertia actualice 'yaConfirmadoServer'
                 toast.success('¡Confirmación enviada con éxito!');
+                reset();
             },
             onError: () => {
                 toast.error('Hubo un error al enviar la confirmación');
@@ -60,6 +63,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
             <section className="py-20 px-6 bg-gray-50/50">
                 <div className="max-w-xl mx-auto">
                     
+                    {/* Si el servidor dice que ya confirmó, mostramos SOLO esto */}
                     {yaHaConfirmado ? (
                         <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
                             <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
@@ -80,15 +84,15 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             </div>
                         </div>
                     ) : (
+                        /* Si NO ha confirmado, mostramos el formulario */
                         <form onSubmit={submit} className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700">
-                            
+                            {/* Campos del formulario... (Nombre, Asistencia, etc) */}
                             <div className="mb-6">
                                 <label className="block mb-2 font-medium text-[#556b4e]">Tu nombre y apellidos</label>
                                 <input
                                     type="text"
                                     value={data.nombre}
                                     onChange={e => setData('nombre', e.target.value)}
-                                    placeholder="Titular de la confirmación"
                                     className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                     required
                                 />
@@ -133,12 +137,10 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                             className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:border-[#6f7f60] resize-none"
                                             required={data.asistentes > 1}
                                         />
-                                        <p className="mt-2 text-[11px] text-gray-400">Separa los nombres por comas.</p>
                                     </div>
 
                                     <div className="mb-8">
                                         <label className="block text-[#556b4e] font-medium">Alergias o restricciones</label>
-                                        <span className="block mb-3 text-xs text-gray-400 italic">Si alguien tiene alguna alergia, indícalo aquí (especificando su nombre).</span>
                                         <textarea
                                             value={data.intolerancias}
                                             onChange={e => setData('intolerancias', e.target.value)}
@@ -156,7 +158,6 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                                     value={data.mensaje}
                                     onChange={e => setData('mensaje', e.target.value)}
                                     rows="3"
-                                    placeholder="¡Cualquier cosa que nos queráis decir!"
                                     className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
                                 />
                             </div>
@@ -164,7 +165,7 @@ export default function Confirmacion({ yaConfirmadoServer }) {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium tracking-wide hover:bg-[#5f6f52] transition-all shadow-md disabled:bg-gray-300"
+                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium tracking-wide hover:bg-[#5f6f52] transition-all disabled:bg-gray-300"
                             >
                                 {processing ? 'Enviando...' : 'Confirmar ahora'}
                             </button>
