@@ -1,176 +1,164 @@
-import { Head, useForm } from '@inertiajs/react';
-import React, { useState, useEffect } from 'react';
-import NavBar from '@/Components/NavBar';
-import Footer from '@/Components/Footer';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Head } from '@inertiajs/react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import StatCard from '@/Components/StatCard';
+import { useState } from 'react';
 
-export default function Confirmacion({ yaConfirmadoServer }) {
-    // Si yaConfirmadoServer es true, el estado inicial será true y el formulario NO se renderizará
-    const [yaHaConfirmado, setYaHaConfirmado] = useState(yaConfirmadoServer);
+export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) {
+    const [search, setSearch] = useState('');
+    const [onlyIntolerances, setOnlyIntolerances] = useState(false);
+    const [attendanceFilter, setAttendanceFilter] = useState('all');
 
-    const { data, setData, post, processing, reset } = useForm({
-        nombre: '',
-        asistentes: '',
-        asistencia: '',
-        intolerancias: '',
-        mensaje: '',
+    const allConfirmations = [...confirmed, ...notConfirmed];
+    
+    const filteredConfirmations = allConfirmations.filter(c => {
+        const matchesName = c.nombre.toLowerCase().includes(search.toLowerCase());
+        const matchesIntolerances = !onlyIntolerances || (c.intolerancias && c.intolerancias.trim() !== '');
+        const matchesAttendance = attendanceFilter === 'all' || c.asistencia === attendanceFilter;
+        return matchesName && matchesIntolerances && matchesAttendance;
     });
 
-    // Mantenemos sincronizado el estado con lo que diga el servidor
-    useEffect(() => {
-        setYaHaConfirmado(yaConfirmadoServer);
-    }, [yaConfirmadoServer]);
-
-    const submit = (e) => {
-        e.preventDefault(); 
-        post('/confirmar-asistencia', {
-            onSuccess: () => {
-                // Tras el éxito, bloqueamos el formulario y mostramos el mensaje
-                setYaHaConfirmado(true);
-                reset();
-                toast.success('¡Confirmación enviada con éxito!');
-            },
-            onError: () => {
-                toast.error('Hubo un error al enviar la confirmación');
-            }
-        });
-    };
-
     return (
-        <>
-            <Head title="Confirmar asistencia" />
-            <NavBar />
+        <AuthenticatedLayout
+            header={<h2 className="font-serif text-xl md:text-2xl text-[#556b4e]">Panel de confirmaciones</h2>}
+        >
+            <Head title="Dashboard" />
 
-            {/* Cabecera común */}
-            <section className="bg-[#dce6d4] pt-32 pb-24 px-6 text-center">
-                <div className="max-w-4xl mx-auto">
-                    <span className="block mb-6 text-sm tracking-[0.3em] uppercase text-[#7a8a70]">
-                        Confirmación
-                    </span>
-                    <h1 className="font-serif text-[2.8rem] md:text-[3.5rem] font-light text-[#556b4e] leading-tight">
-                        Confirmación de asistencia
-                    </h1>
-                    <div className="mx-auto mt-10 h-px w-32 bg-[#9aaa8a] opacity-70" />
-                </div>
-            </section>
-
-            <section className="py-20 px-6 bg-gray-50/50">
-                <div className="max-w-xl mx-auto">
+            <div className="py-6 md:py-12">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     
-                    {/* CONDICIONAL PRINCIPAL: Si ya confirmó, mostramos mensaje. Si no, mostramos formulario */}
-                    {yaHaConfirmado ? (
-                        <div className="bg-white shadow-md rounded-xl p-8 md:p-12 text-center border-t-4 border-[#6f7f60] animate-in fade-in zoom-in duration-500">
-                            <div className="w-20 h-20 bg-[#f5f7f3] text-[#7a8a70] rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#6f7f60]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            
-                            <h2 className="font-serif text-3xl text-[#556b4e] mb-4">¡Asistencia confirmada!</h2>
-                            
-                            <p className="text-gray-600 mb-10 leading-relaxed">
-                                Ya hemos recibido vuestra respuesta. No es necesario que hagáis nada más, vuestros asientos ya están reservados en nuestra lista.
-                            </p>
+                    {/* Estadísticas */}
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-8">
+                        <StatCard title="Confirmaciones" value={stats.total} />
+                        <StatCard title="Asisten" value={stats.yes} />
+                        <StatCard title="No asisten" value={stats.no} />
+                        <StatCard title="Con alergias" value={stats.intolerances} />
+                        <StatCard title="Total invitados" value={stats.guests} />
+                    </div>
 
-                            <div className="bg-[#f5f7f3] p-6 rounded-lg border border-[#dce6d4] text-left">
-                                <p className="text-[10px] text-[#7a8a70] uppercase tracking-widest mb-3 font-bold text-center">¿Necesitas hacer algún cambio?</p>
-                                <p className="text-gray-600 text-sm mb-4 text-center">
-                                    Si te has equivocado o necesitas avisarnos de algo nuevo, escríbenos:
-                                </p>
-                                <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-[#556b4e] font-bold text-lg">
-                                    <span>Lucia: 608 41 90 71</span>
-                                    <span className="hidden md:inline opacity-30">|</span>
-                                    <span>Roman: 602 24 65 35</span>
-                                </div>
-                            </div>
-                        </div>
-                    ) : (
-                        <form
-                            onSubmit={submit}
-                            className="bg-white shadow-sm rounded-lg p-8 md:p-10 border border-gray-100 animate-in fade-in duration-700"
-                        >
-                            {/* ... (Resto de los campos del formulario que ya tenías) ... */}
-                            <div className="mb-6">
-                                <label className="block mb-2 font-medium text-[#556b4e]">Nombre y apellidos</label>
-                                <input
-                                    type="text"
-                                    value={data.nombre}
-                                    onChange={e => setData('nombre', e.target.value)}
-                                    placeholder="Introduce tu nombre completo"
-                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60] focus:border-[#6f7f60] transition-all"
-                                    required
-                                />
-                            </div>
-
-                            <div className="mb-6">
-                                <label className="block mb-2 font-medium text-[#556b4e]">¿Asistirás a la boda?</label>
-                                <select
-                                    value={data.asistencia}
-                                    onChange={e => setData('asistencia', e.target.value)}
-                                    className="w-full border border-gray-200 rounded-md px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
-                                    required
-                                >
-                                    <option value="">Selecciona una opción</option>
-                                    <option value="si">Sí, allí estaré</option>
-                                    <option value="no">No podré asistir</option>
-                                </select>
-                            </div>
-
-                            {data.asistencia === 'si' && (
-                                <div className="animate-in slide-in-from-top-4 duration-500">
-                                    <div className="mb-6">
-                                        <label className="block mb-2 font-medium text-[#556b4e]">Número de asistentes</label>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            value={data.asistentes}
-                                            onChange={e => setData('asistentes', e.target.value)}
-                                            className="w-full border border-gray-200 rounded-md px-4 py-3"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-8">
-                                        <label className="block text-[#556b4e] font-medium">¿Alguna intolerancia o restricción alimentaria?</label>
-                                        <span className="block mb-3 text-xs text-gray-400 italic">
-                                            Si no tienes ninguna, puedes dejar este campo en blanco.
-                                        </span>
-                                        <textarea
-                                            value={data.intolerancias}
-                                            onChange={e => setData('intolerancias', e.target.value)}
-                                            rows="3"
-                                            placeholder="Ej: Celíaco, alérgico a los frutos secos..."
-                                            className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            <div className="mb-8">
-                                <label className="block mb-2 font-medium text-[#556b4e]">¿Quieres dejarnos un mensaje?</label>
-                                <textarea
-                                    value={data.mensaje}
-                                    onChange={e => setData('mensaje', e.target.value)}
-                                    rows="4"
-                                    placeholder="Opcional: Dedicatoria, canción que no puede faltar..."
-                                    className="w-full border border-gray-200 rounded-md px-4 py-3 resize-none focus:outline-none focus:ring-1 focus:ring-[#6f7f60]"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={processing}
-                                className="w-full bg-[#6f7f60] text-white py-4 rounded-md font-medium tracking-wide hover:bg-[#5f6f52] transition-all shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    {/* Filtros */}
+                    <div className="bg-[#f5f7f3] border border-[#dce6d4] rounded-lg p-4 md:p-6 mb-8 shadow-sm">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                            <input
+                                type="text"
+                                placeholder="Buscar invitado..."
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full border border-[#9aaa8a] bg-white rounded-md px-4 py-2 text-sm focus:ring-1 focus:ring-[#6f7f60] outline-none"
+                            />
+                            <select
+                                value={attendanceFilter}
+                                onChange={e => setAttendanceFilter(e.target.value)}
+                                className="w-full border border-[#9aaa8a] bg-white rounded-md px-4 py-2 text-sm outline-none"
                             >
-                                {processing ? 'Enviando confirmación...' : 'Confirmar asistencia'}
-                            </button>
-                        </form>
-                    )}
+                                <option value="all">Filtrar por asistencia</option>
+                                <option value="si">Confirmados (Si)</option>
+                                <option value="no">Cancelados (No)</option>
+                            </select>
+                            <label className="flex items-center gap-3 text-sm text-[#556b4e] cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={onlyIntolerances}
+                                    onChange={e => setOnlyIntolerances(e.target.checked)}
+                                    className="rounded border-[#9aaa8a] text-[#6f7f60] focus:ring-[#6f7f60]"
+                                />
+                                <span className="font-medium">Solo con intolerancias</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* TABLA: Actualizada con columna de Acompañantes */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-[#dce6d4]">
+                                    <tr>
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Titular
+                                        </th>
+                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Estado
+                                        </th>
+                                        <th className="px-4 py-3 text-center text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Pax
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Acompañantes
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Alergias / Intolerancias
+                                        </th>
+                                        <th className="px-4 py-3 text-left text-[10px] md:text-xs tracking-widest uppercase text-[#556b4e] font-bold">
+                                            Mensaje
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody className="divide-y divide-gray-100 bg-white">
+                                    {filteredConfirmations.length > 0 ? (
+                                        filteredConfirmations.map((c, index) => (
+                                            <tr key={index} className="hover:bg-[#f5f7f3] transition-colors align-top">
+                                                {/* Nombre Titular */}
+                                                <td className="px-4 py-4 min-w-[140px]">
+                                                    <div className="text-sm font-bold text-gray-900">{c.nombre}</div>
+                                                    <div className="text-[10px] text-gray-400">{c.user?.email || '—'}</div>
+                                                </td>
+
+                                                {/* Asistencia */}
+                                                <td className="px-4 py-4 text-center">
+                                                    {c.asistencia === 'si' ? (
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-800 uppercase">Si</span>
+                                                    ) : (
+                                                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-800 uppercase">No</span>
+                                                    )}
+                                                </td>
+
+                                                {/* Número total */}
+                                                <td className="px-4 py-4 text-center font-bold text-gray-700">
+                                                    {c.asistentes || 1}
+                                                </td>
+
+                                                {/* NUEVA COLUMNA: Nombres de acompañantes */}
+                                                <td className="px-4 py-4 min-w-[180px]">
+                                                    {c.nombres_asistentes ? (
+                                                        <div className="text-sm text-gray-700 leading-snug whitespace-pre-line">
+                                                            {c.nombres_asistentes}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-300 italic text-xs">—</span>
+                                                    )}
+                                                </td>
+
+                                                {/* Alergias resaltadas */}
+                                                <td className="px-4 py-4 min-w-[200px]">
+                                                    {c.intolerancias ? (
+                                                        <div className="text-sm text-orange-900 bg-orange-50 p-2 rounded border border-orange-100 italic">
+                                                            {c.intolerancias}
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-300 italic text-sm">Ninguna</span>
+                                                    )}
+                                                </td>
+
+                                                {/* Mensaje */}
+                                                <td className="px-4 py-4 min-w-[200px] text-sm text-gray-600 italic leading-relaxed">
+                                                    {c.mensaje || <span className="text-gray-300">—</span>}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="6" className="px-4 py-10 text-center text-gray-400 italic">
+                                                No hay resultados que coincidan con la búsqueda.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
-            </section>
-            
-            <ToastContainer position="bottom-center" />
-            <Footer />
-        </>
+            </div>
+        </AuthenticatedLayout>
     );
 }
