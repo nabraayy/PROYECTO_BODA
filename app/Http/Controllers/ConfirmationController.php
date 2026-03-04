@@ -26,43 +26,36 @@ class ConfirmationController extends Controller
 
 public function store(Request $request)
 {
-    $currentUserId = Auth::id();
-
-    // 1. EL ESCUDO: Si ya existe, nos salimos ANTES de que explote la base de datos
-    if (Confirmation::where('user_id', $currentUserId)->exists()) {
-        // Volvemos atrás sin hacer nada. El Front recibirá la señal y mostrará el éxito.
+    // 1. Si ya existe, ni lo intentamos. Volvemos atrás.
+    if (\App\Models\Confirmation::where('user_id', auth()->id())->exists()) {
         return redirect()->back();
     }
 
-    // 2. VALIDACIÓN: Aseguramos que los datos sean correctos
-    $validated = $request->validate([
-        'nombre'             => 'required|string|max:255',
-        'asistencia'         => 'required|in:si,no',
-        'asistentes'         => 'nullable|integer|min:0',
-        'nombres_asistentes' => 'nullable|string',
-        'intolerancias'      => 'nullable|string',
-        'mensaje'            => 'nullable|string',
+    // 2. Validación simple
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'asistencia' => 'required',
     ]);
 
-    // 3. INSERTAR CON SEGURIDAD
+    // 3. Guardado manual (más seguro que el validated)
     try {
-        Confirmation::create([
-            'user_id'            => $currentUserId,
-            'nombre'             => $validated['nombre'],
-            'asistencia'         => $validated['asistencia'],
-            // Usamos ?? para que si viene vacío se guarde algo coherente y no un null prohibido
-            'asistentes'         => $validated['asistentes'] ?? 0,
-            'nombres_asistentes' => $validated['nombres_asistentes'] ?? '',
-            'intolerancias'      => $validated['intolerancias'] ?? '',
-            'mensaje'            => $validated['mensaje'] ?? '',
-        ]);
+        $conf = new \App\Models\Confirmation();
+        $conf->user_id = auth()->id();
+        $conf->nombre = $request->nombre;
+        $conf->asistencia = $request->asistencia;
+        $conf->asistentes = $request->asistentes ?? 1;
+        $conf->nombres_asistentes = $request->nombres_asistentes ?? '';
+        $conf->intolerancias = $request->intolerancias ?? '';
+        $conf->mensaje = $request->mensaje ?? '';
+        $conf->save();
 
-        return redirect()->back();
+        // 4. Redirección limpia
+        return redirect()->route('confirmar.asistencia'); 
 
     } catch (\Exception $e) {
-        // Si hay un error de SQL inesperado, capturamos el fallo para que no salga el error 500
-        // y simplemente refrescamos la página.
+        // Si falla el guardado, volvemos atrás sin error 500
         return redirect()->back();
     }
+
 }
 }

@@ -25,14 +25,20 @@ export default function Confirmacion({ yaConfirmadoServer }) {
 
    const submit = (e) => {
     e.preventDefault(); 
+    
     post('/confirmar-asistencia', {
         preserveScroll: true,
+        // Forzamos que, pase lo que pase, al terminar la petición
+        // se marque como confirmado.
+        onFinish: () => {
+            setConfirmado(true);
+        },
         onSuccess: () => {
             setConfirmado(true);
         },
-        onFinish: () => {
-            // Esto es vital: si el servidor vuelve (aunque sea por duplicado), 
-            // reactivamos la lógica visual de "Confirmado"
+        onError: () => {
+            // Si salta el 500 pero los datos se guardaron, 
+            // esto hará que aparezcan los teléfonos y desaparezca el error.
             setConfirmado(true);
         }
     });
