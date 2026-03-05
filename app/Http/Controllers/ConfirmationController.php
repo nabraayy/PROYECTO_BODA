@@ -38,8 +38,8 @@ class ConfirmationController extends Controller
             'intolerancias' => 'nullable|string',
             'mensaje' => 'nullable|string',
         ]);
-
-        $validated['nombres_asistentes'] = json_encode($validated['nombres_asistentes'] ?? []);
+        
+        $validated['nombres_asistentes'] = $validated['nombres_asistentes'] ?? [];
         $user = auth()->user();
 
         // Buscar si ya existe para este usuario

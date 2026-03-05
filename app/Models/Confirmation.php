@@ -11,6 +11,9 @@ class Confirmation extends Model
 
     
     protected $table = 'confirmations';  
+    protected $casts = [
+    'nombres_asistentes' => 'array',
+    ];
 
     protected $fillable = [
         'user_id',

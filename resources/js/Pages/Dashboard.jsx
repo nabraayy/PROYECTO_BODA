@@ -119,13 +119,29 @@ export default function Dashboard({ confirmed = [], notConfirmed = [], stats }) 
 
                                                 {/* NUEVA COLUMNA: Nombres de acompañantes */}
                                                 <td className="px-4 py-4 min-w-[180px]">
-                                                    {c.nombres_asistentes ? (
-                                                        <div className="text-sm text-gray-700 leading-snug whitespace-pre-line">
-                                                            {c.nombres_asistentes}
-                                                        </div>
+                                                {
+                                                (() => {
+                                                    let nombres = [];
+
+                                                    if (Array.isArray(c.nombres_asistentes)) {
+                                                        nombres = c.nombres_asistentes;
+                                                    } else if (typeof c.nombres_asistentes === "string") {
+                                                        try {
+                                                            nombres = JSON.parse(c.nombres_asistentes);
+                                                        } catch {
+                                                            nombres = [];
+                                                        }
+                                                    }
+
+                                                    return nombres.length > 0 ? (
+                                                        nombres.map((n, i) => (
+                                                            <div key={i} className="text-sm text-gray-700">{n}</div>
+                                                        ))
                                                     ) : (
                                                         <span className="text-gray-300 italic text-xs">—</span>
-                                                    )}
+                                                    );
+                                                })()
+                                                }
                                                 </td>
 
                                                 {/* Alergias resaltadas */}
