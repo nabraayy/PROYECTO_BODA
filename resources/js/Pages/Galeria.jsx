@@ -14,6 +14,26 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const [progress, setProgress] = useState(0);
     const [modalItem, setModalItem] = useState(null);
 
+    const images = [
+  "/boda_lucia/Galeria/240822.0002.jpg",
+  "/boda_lucia/Galeria/240822.0013.jpg",
+  "/boda_lucia/Galeria/240822.0014.jpg",
+  "/boda_lucia/Galeria/240822.0053.jpg",
+  "/boda_lucia/Galeria/240822.0021.jpg",
+  "/boda_lucia/Galeria/240822.0057.jpg",
+
+  "/boda_lucia/Galeria/240822.0108.jpg",
+  "/boda_lucia/Galeria/240822.0109.jpg",
+  "/boda_lucia/Galeria/240822.0111.jpg",
+  "/boda_lucia/Galeria/240822.0146.jpg",
+  "/boda_lucia/Galeria/240822.0150.jpg",
+  "/boda_lucia/Galeria/240822.0153.jpg",
+
+  "/boda_lucia/Galeria/240822.0158.jpg",
+  "/boda_lucia/Galeria/240822.0167.jpg",
+  "/boda_lucia/Galeria/240822.0225.jpg",
+];
+
     // Lógica de permisos y fechas
     const isAdmin = auth?.user?.role === 'admin';
     const OPEN_DATE = new Date('2026-07-11T00:00:00');
@@ -135,6 +155,8 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             )}
 
             {/* LA GALERÍA: Visible para todos (solo lectura) */}
+            {/* LA GALERÍA: solo visible para admin */}
+            {isAdmin && (
             <section className="pb-24">
                 <div className="gallery-grid">
                     {galeria.map((item) => (
@@ -144,6 +166,21 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                             ) : (
                                 <video src={item.url} muted playsInline />
                             )}
+                        </div>
+                    ))}
+                </div>
+            </section>
+            )}
+
+            <section className="pb-24">
+                <div className="gallery-grid">
+                    {images.map((url, index) => (
+                        <div
+                            key={index}
+                            className="gallery-item"
+                            onClick={() => setModalItem({ url, tipo: 'imagen' })}
+                        >
+                            <img src={url} alt="" loading="lazy" />
                         </div>
                     ))}
                 </div>
