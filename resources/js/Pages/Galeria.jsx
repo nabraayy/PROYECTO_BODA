@@ -187,14 +187,52 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             </section>
 
             {/* MODAL DE VISTA PREVIA */}
-            {modalItem && (
-                <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4" onClick={() => setModalItem(null)}>
-                    <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
-                        <img src={modalItem.url} className="max-h-[85vh] object-contain" alt="" />
-                        <button onClick={() => setModalItem(null)} className="absolute -top-10 right-0 text-white text-xl">✕ Cerrar</button>
-                    </div>
-                </div>
+            {/* MODAL DE VISTA PREVIA */}
+{modalItem && (
+    <div 
+        className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 transition-opacity duration-300" 
+        onClick={() => setModalItem(null)}
+    >
+        <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+            
+            {/* Visualizador de Contenido */}
+            {modalItem.tipo === 'video' ? (
+                <video src={modalItem.url} controls autoPlay className="max-h-[75vh] rounded-lg shadow-2xl" />
+            ) : (
+                <img src={modalItem.url} className="max-h-[75vh] object-contain rounded-lg shadow-2xl" alt="" />
             )}
+
+            {/* Título (si existe) */}
+            {modalItem.titulo && (
+                <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>
+            )}
+
+            {/* Botonera inferior */}
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+                
+                {/* BOTÓN DESCARGAR: Solo aparece si el item viene de la DB (tiene id) */}
+                {modalItem.id ? (
+                    <a 
+                        href={route('galeria.download', modalItem.id)} 
+                        className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg"
+                    >
+                        <span>📥</span> Descargar original
+                    </a>
+                ) : (
+                    // Mensaje para las fotos que tienes en el array estático "images"
+                    <span className="text-white/50 text-sm italic">Vista previa</span>
+                )}
+
+                <button 
+                    onClick={() => setModalItem(null)} 
+                    className="text-white border border-white/20 px-8 py-3 rounded-full hover:bg-white/10 transition-all uppercase tracking-widest text-xs"
+                >
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+)}
 
             <Footer />
         </div>

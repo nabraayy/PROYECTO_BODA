@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str; // Añadido para ayudar con strings
 
 class GaleriaController extends Controller
 {
@@ -22,6 +23,8 @@ class GaleriaController extends Controller
                     'titulo' => $item->titulo,
                     'descripcion' => $item->descripcion,
                     'created_at' => $item->created_at->format('d M Y'),
+                    // Importante: R2 con driver S3 a veces da problemas con url(). 
+                    // Si falla, usaremos la URL de tu .env (AWS_URL)
                     'url' => Storage::disk('s3')->url($item->ruta),
                 ];
             }),
@@ -39,9 +42,9 @@ class GaleriaController extends Controller
         $file = $request->file('archivo');
         $mime = $file->getMimeType();
 
-
         // 🎥 VÍDEOS
         if (str_starts_with($mime, 'video/')) {
+            // Guardamos el vídeo tal cual
             $path = $file->store('galeria/videos', 's3');
             
             Galeria::create([
@@ -54,14 +57,12 @@ class GaleriaController extends Controller
             return redirect()->route('galeria.index');
         }
 
-        
+        // 📸 IMÁGENES
         try {
             ini_set('memory_limit', '1024M');
             $manager = new ImageManager(new Driver());
             
-            
             $image = $manager->read($file);
-            
             $image->orient(); 
 
             if ($image->width() > 2500) {
@@ -70,13 +71,16 @@ class GaleriaController extends Controller
 
             $filename = uniqid('img_') . '.jpg';
             $encoded = $image->toJpeg(80);
-            Storage::disk('s3')->put('galeria/imagenes/' . $filename, (string) $encoded, 'public');
+            
+            // CAMBIO AQUÍ: Eliminamos el 'public' si R2 da error de permisos, 
+            // y nos aseguramos de pasar el string del contenido.
+            Storage::disk('s3')->put('galeria/imagenes/' . $filename, $encoded->toString());
 
             $finalPath = 'galeria/imagenes/' . $filename;
 
         } catch (\Exception $e) {
-            $path = $file->store('galeria/imagenes', 's3');
-            $finalPath = $path;
+            // Si falla Intervention (ej. formato HEIC no soportado), subimos el original
+            $finalPath = $file->store('galeria/imagenes', 's3');
         }
 
         Galeria::create([
@@ -89,12 +93,21 @@ class GaleriaController extends Controller
         return redirect()->route('galeria.index');
     }
 
-    public function getDownloadLink($filename)
+    // NUEVA FUNCIÓN: Esta es la que realmente hace la descarga
+    public function download($id)
     {
-        // Generar un enlace público (sin expiración)
-        $fileUrl = Storage::disk('s3')->url($filename);
+        $item = Galeria::findOrFail($id);
 
-        return response()->json(['url' => $fileUrl]);
+        // Verificamos si el archivo existe en R2
+        if (!Storage::disk('s3')->exists($item->ruta)) {
+            abort(404, 'El archivo no existe en el almacenamiento.');
+        }
+
+        // Esta función de Laravel fuerza al navegador a descargar el archivo
+        // en lugar de intentar abrirlo (que es lo que suele pasar con fotos).
+        return Storage::disk('s3')->download(
+            $item->ruta, 
+            $item->titulo ? Str::slug($item->titulo) . '.jpg' : 'foto-boda-' . $id . '.jpg'
+        );
     }
-    
 }
