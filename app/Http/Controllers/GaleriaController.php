@@ -103,11 +103,19 @@ class GaleriaController extends Controller
             abort(404, 'El archivo no existe en el almacenamiento.');
         }
 
+        $extension = pathinfo($item->ruta, PATHINFO_EXTENSION);
+        $nombreArchivo = Str::slug($item->titulo ?? 'recuerdo-boda') . '.' . $extension;
+
+        $temporaryUrl = Storage::disk('s3')->temporaryUrl(
+        $item->ruta,
+        now()->addMinutes(20),
+        [
+            'ResponseContentDisposition' => 'attachment; filename="' . $nombreArchivo . '"',
+        ]
+    );
+
         // Esta función de Laravel fuerza al navegador a descargar el archivo
         // en lugar de intentar abrirlo (que es lo que suele pasar con fotos).
-        return Storage::disk('s3')->download(
-            $item->ruta, 
-            $item->titulo ? Str::slug($item->titulo) . '.jpg' : 'foto-boda-' . $id . '.jpg'
-        );
+        return redirect($temporaryUrl);
     }
 }
