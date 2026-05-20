@@ -14,39 +14,38 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const [progress, setProgress] = useState(0);
     const [modalItem, setModalItem] = useState(null);
 
-    // Imágenes de muestra/estáticas
     const images = [
-        "/boda_lucia/Galeria/240822.0002.jpg",
-        "/boda_lucia/Galeria/240822.0013.jpg",
-        "/boda_lucia/Galeria/240822.0014.jpg",
-        "/boda_lucia/Galeria/240822.0053.jpg",
-        "/boda_lucia/Galeria/240822.0021.jpg",
-        "/boda_lucia/Galeria/240822.0057.jpg",
-        "/boda_lucia/Galeria/240822.0108.jpg",
-        "/boda_lucia/Galeria/240822.0109.jpg",
-        "/boda_lucia/Galeria/240822.0111.jpg",
-        "/boda_lucia/Galeria/240822.0146.jpg",
-        "/boda_lucia/Galeria/240822.0150.jpg",
-        "/boda_lucia/Galeria/240822.0153.jpg",
-        "/boda_lucia/Galeria/240822.0158.jpg",
-        "/boda_lucia/Galeria/240822.0167.jpg",
-        "/boda_lucia/Galeria/240822.0225.jpg",
-    ];
+  "/boda_lucia/Galeria/240822.0002.jpg",
+  "/boda_lucia/Galeria/240822.0013.jpg",
+  "/boda_lucia/Galeria/240822.0014.jpg",
+  "/boda_lucia/Galeria/240822.0053.jpg",
+  "/boda_lucia/Galeria/240822.0021.jpg",
+  "/boda_lucia/Galeria/240822.0057.jpg",
 
+  "/boda_lucia/Galeria/240822.0108.jpg",
+  "/boda_lucia/Galeria/240822.0109.jpg",
+  "/boda_lucia/Galeria/240822.0111.jpg",
+  "/boda_lucia/Galeria/240822.0146.jpg",
+  "/boda_lucia/Galeria/240822.0150.jpg",
+  "/boda_lucia/Galeria/240822.0153.jpg",
+
+  "/boda_lucia/Galeria/240822.0158.jpg",
+  "/boda_lucia/Galeria/240822.0167.jpg",
+  "/boda_lucia/Galeria/240822.0225.jpg",
+];
+
+    // Lógica de permisos y fechas
     const isAdmin = auth?.user?.role === 'admin';
     const OPEN_DATE = new Date('2026-07-11T00:00:00');
     const [timeLeft, setTimeLeft] = useState(null);
-
-    // Forzar apertura para pruebas en usuarios comunes (Cambiar a false si quieres volver a bloquear temporalmente)
-    const estaAbiertaParaPruebas = true;
 
     useEffect(() => {
         setGaleria(initialGaleria);
     }, [initialGaleria]);
 
-    // Timer para el contador de cuenta atrás
+    // Timer para el contador
     useEffect(() => {
-        if (isAdmin || estaAbiertaParaPruebas) return;
+        if (isAdmin) return;
 
         const timer = setInterval(() => {
             const now = new Date();
@@ -67,7 +66,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isAdmin, estaAbiertaParaPruebas]);
+    }, [isAdmin]);
 
     const handleArchivoChange = (e) => {
         const file = e.target.files[0];
@@ -99,11 +98,11 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             
             <style>{`
                 .gallery-grid { column-count: 4; column-gap: 1.2rem; padding: 2rem; max-width: 1600px; margin: 0 auto; }
-                .gallery-item { break-inside: avoid; margin-bottom: 1.2rem; width: 100%; display: block; cursor: pointer; position: relative; }
-                .gallery-item img, .gallery-item video { width: 100% !important; height: auto !important; display: block; object-fit: contain; rounded-radius: 8px; }
+                .gallery-item { break-inside: avoid; margin-bottom: 1.2rem; width: 100%; display: block; cursor: pointer; }
+                .gallery-item img, .gallery-item video { width: 100% !important; height: auto !important; display: block; object-fit: contain; }
                 @media (max-width: 1200px) { .gallery-grid { column-count: 3; } }
-                @media (max-width: 768px) { .gallery-grid { column-count: 2; padding: 1rem; } }
-                @media (max-width: 480px) { .gallery-grid { column-count: 1; padding: 0.8rem; } }
+                @media (max-width: 768px) { .gallery-grid { column-count: 2; } }
+                @media (max-width: 480px) { .gallery-grid { column-count: 1; } }
             `}</style>
 
             {/* Cabecera común */}
@@ -116,8 +115,8 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {/* MODO MANTENIMIENTO: Oculto si está activo el modo pruebas o si es admin */}
-            {(!estaAbiertaParaPruebas && !isAdmin) && (
+            {/* MODO MANTENIMIENTO: Solo se muestra si NO es Admin */}
+            {!isAdmin && (
                 <section className="pb-16 px-6 text-center">
                     <div className="max-w-2xl mx-auto bg-white/40 backdrop-blur-sm p-10 rounded-2xl border border-[#9aaa8a]/30 shadow-sm">
                         <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparando algo especial</h2>
@@ -139,113 +138,101 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </section>
             )}
 
-            {/* FORMULARIO DE SUBIDA: Habilitado para todos (Admin y Usuarios) */}
-            {(estaAbiertaParaPruebas || isAdmin) && (
+            {/* FORMULARIO: Solo se muestra si es Admin */}
+            {isAdmin && (
                 <section className="pb-16 px-6">
                     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
-                        <h2 className="text-xl font-light text-[#556b4e] mb-6 text-center">
-                            {isAdmin ? 'Subir nueva foto (Admin)' : 'Comparte tus fotos de la boda'}
-                        </h2>
+                        <h2 className="text-xl font-light text-[#556b4e] mb-6 text-center">Subir nueva foto (Admin)</h2>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                            <input type="file" onChange={handleArchivoChange} required className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#dce6d4] file:text-[#556b4e] hover:file:bg-[#cedbc4]" />
-                            <input type="text" placeholder="Título o dedicatoria (opcional)" value={titulo} onChange={e => setTitulo(e.target.value)} className="p-2 border rounded" />
-                            <button disabled={uploading} className="bg-[#6f8352] text-white py-2 rounded font-medium hover:bg-[#5a6b43] transition-colors">
-                                {uploading ? `Subiendo ${Math.round(progress)}%` : 'Publicar recuerdo'}
+                            <input type="file" onChange={handleArchivoChange} required className="text-sm" />
+                            <input type="text" placeholder="Título" value={titulo} onChange={e => setTitulo(e.target.value)} className="p-2 border" />
+                            <button disabled={uploading} className="bg-[#6f8352] text-white py-2">
+                                {uploading ? `Subiendo ${Math.round(progress)}%` : 'Publicar'}
                             </button>
                         </form>
                     </div>
                 </section>
             )}
 
-            {/* LA GALERÍA UNIFICADA: Visible para todos (Admin e Invitados) */}
+            {/* LA GALERÍA: Visible para todos (solo lectura) */}
+            {/* LA GALERÍA: solo visible para admin */}
+            {isAdmin && (
             <section className="pb-24">
                 <div className="gallery-grid">
-                    {/* 1. Renderizar contenido subido en tiempo real desde R2 */}
                     {galeria.map((item) => (
-                        <div key={item.id} className="gallery-item group overflow-hidden rounded-lg shadow-sm" onClick={() => setModalItem(item)}>
+                        <div key={item.id} className="gallery-item" onClick={() => setModalItem(item)}>
                             {item.tipo === 'imagen' ? (
-                                <img src={item.url} alt={item.titulo ?? ""} loading="lazy" className="hover:scale-102 transition-transform duration-300" />
+                                <img src={item.url} alt="" loading="lazy" />
                             ) : (
-                                <div className="relative bg-black rounded-lg overflow-hidden">
-                                    <video 
-                                        src={item.url} 
-                                        muted 
-                                        playsInline 
-                                        preload="metadata"
-                                        className="w-full h-auto"
-                                    />
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors">
-                                        <span className="text-white text-2xl">▶</span>
-                                    </div>
-                                </div>
+                                <video src={item.url} muted playsInline />
                             )}
                         </div>
                     ))}
+                </div>
+            </section>
+            )}
 
-                    {/* 2. Renderizar contenido estático de relleno */}
+            <section className="pb-24">
+                <div className="gallery-grid">
                     {images.map((url, index) => (
                         <div
-                            key={`static-${index}`}
-                            className="gallery-item overflow-hidden rounded-lg shadow-sm opacity-90 hover:opacity-100"
+                            key={index}
+                            className="gallery-item"
                             onClick={() => setModalItem({ url, tipo: 'imagen' })}
                         >
-                            <img src={url} alt="Muestra" loading="lazy" className="hover:scale-102 transition-transform duration-300" />
+                            <img src={url} alt="" loading="lazy" />
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* MODAL DE VISTA PREVIA Y DESCARGA */}
-            {modalItem && (
-                <div 
-                    className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 transition-opacity duration-300" 
-                    onClick={() => setModalItem(null)}
-                >
-                    <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
-                        
-                        {/* Visualizador de Contenido Adaptado */}
-                        {modalItem.tipo === 'video' ? (
-                            <video 
-                                src={modalItem.url} 
-                                controls 
-                                autoPlay 
-                                playsInline
-                                className="max-h-[70vh] w-full rounded-lg shadow-2xl" 
-                            />
-                        ) : (
-                            <img src={modalItem.url} className="max-h-[70vh] object-contain rounded-lg shadow-2xl" alt="" />
-                        )}
-
-                        {/* Título */}
-                        {modalItem.titulo && (
-                            <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>
-                        )}
-
-                        {/* Botonera inferior */}
-                        <div className="mt-6 flex flex-wrap justify-center gap-4 w-full">
-                            
-                            {/* Descarga inteligente según el origen */}
-                            {modalItem.id ? (
-                                <a 
-                                    href={route('galeria.download', modalItem.id)} 
-                                    className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
-                                >
-                                    <span>📥</span> Descargar original
-                                </a>
-                            ) : (
-                                <span className="text-white/40 text-sm italic py-3">Foto de muestra fija</span>
-                            )}
-
-                            <button 
-                                onClick={() => setModalItem(null)} 
-                                className="text-white border border-white/20 px-8 py-3 rounded-full hover:bg-white/10 transition-all uppercase tracking-widest text-xs font-semibold"
-                            >
-                                Cerrar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {/* MODAL DE VISTA PREVIA */}
+            {/* MODAL DE VISTA PREVIA */}
+{modalItem && (
+    <div 
+        className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 transition-opacity duration-300" 
+        onClick={() => setModalItem(null)}
+    >
+        <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+            
+            {/* Visualizador de Contenido */}
+            {modalItem.tipo === 'video' ? (
+                <video src={modalItem.url} controls autoPlay className="max-h-[75vh] rounded-lg shadow-2xl" />
+            ) : (
+                <img src={modalItem.url} className="max-h-[75vh] object-contain rounded-lg shadow-2xl" alt="" />
             )}
+
+            {/* Título (si existe) */}
+            {modalItem.titulo && (
+                <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>
+            )}
+
+            {/* Botonera inferior */}
+            <div className="mt-8 flex flex-wrap justify-center gap-4">
+                
+                {/* BOTÓN DESCARGAR: Solo aparece si el item viene de la DB (tiene id) */}
+                {modalItem.id ? (
+                    <a 
+                        href={route('galeria.download', modalItem.id)} 
+                        className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg"
+                    >
+                        <span>📥</span> Descargar recuerdo
+                    </a>
+                ) : (
+                    // Mensaje para las fotos que tienes en el array estático "images"
+                    <span className="text-white/50 text-sm italic">Vista previa</span>
+                )}
+
+                <button 
+                    onClick={() => setModalItem(null)} 
+                    className="text-white border border-white/20 px-8 py-3 rounded-full hover:bg-white/10 transition-all uppercase tracking-widest text-xs"
+                >
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+)}
 
             <Footer />
         </div>
