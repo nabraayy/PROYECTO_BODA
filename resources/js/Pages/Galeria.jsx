@@ -212,7 +212,14 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                                     <span>📥</span> Descargar original
                                 </a>
                             ) : (
-                                <span className="text-white/40 text-sm italic py-3">Foto de muestra fija</span>
+                                // Permitir descargar la foto de muestra usando el enlace directo
+                                <a 
+                                    href={modalItem.url}
+                                    download={`muestra-${modalItem.url.split('/').pop()}`}
+                                    className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
+                                >
+                                    <span>📥</span> Descargar muestra
+                                </a>
                             )}
 
                             <button 
