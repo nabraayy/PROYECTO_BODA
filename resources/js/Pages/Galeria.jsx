@@ -15,7 +15,23 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const [modalItem, setModalItem] = useState(null);
 
     // Lista unificada de imágenes fijas de muestra (Aseguramos el nombre exacto "images")
-    
+    const images = [
+        "/boda_lucia/Galeria/240822.0002.jpg",
+        "/boda_lucia/Galeria/240822.0013.jpg",
+        "/boda_lucia/Galeria/240822.0014.jpg",
+        "/boda_lucia/Galeria/240822.0053.jpg",
+        "/boda_lucia/Galeria/240822.0021.jpg",
+        "/boda_lucia/Galeria/240822.0057.jpg",
+        "/boda_lucia/Galeria/240822.0108.jpg",
+        "/boda_lucia/Galeria/240822.0109.jpg",
+        "/boda_lucia/Galeria/240822.0111.jpg",
+        "/boda_lucia/Galeria/240822.0146.jpg",
+        "/boda_lucia/Galeria/240822.0150.jpg",
+        "/boda_lucia/Galeria/240822.0153.jpg",
+        "/boda_lucia/Galeria/240822.0158.jpg",
+        "/boda_lucia/Galeria/240822.0167.jpg",
+        "/boda_lucia/Galeria/240822.0225.jpg",
+    ];
 
     const isAdmin = auth?.user?.role === 'admin';
     const OPEN_DATE = new Date('2026-07-11T00:00:00');
@@ -205,7 +221,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
 
                         <div className="mt-6 flex flex-wrap justify-center gap-4 w-full">
                             {modalItem.id ? (
-                                <a 
+                                            <a 
                                     href={route('galeria.download', modalItem.id)} 
                                     className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
                                 >
