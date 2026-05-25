@@ -48,5 +48,6 @@ Route::get('/galeria', [GaleriaController::class, 'index'])->name('galeria.index
 Route::post('/galeria', [GaleriaController::class, 'store'])->name('galeria.store');
 //Route::get('download-link/{filename}', [GaleriaController::class, 'getDownloadLink']);
 Route::get('/galeria/download/{id}', [GaleriaController::class, 'download'])->name('galeria.download');
+Route::delete('/galeria/{id}', [GaleriaController::class, 'destroy'])->name('galeria.destroy')->middleware('auth');
 
 require __DIR__.'/auth.php';

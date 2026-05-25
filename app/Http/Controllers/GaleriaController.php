@@ -118,4 +118,23 @@ class GaleriaController extends Controller
         // en lugar de intentar abrirlo (que es lo que suele pasar con fotos).
         return redirect($temporaryUrl);
     }
+    public function destroy($id)
+{
+    // Asegurarse de que solo el admin pueda borrar
+    if (auth()->user()->role !== 'admin') {
+        abort(403, 'No tienes permisos para realizar esta acción.');
+    }
+
+    $item = Galeria::findOrFail($id);
+
+    // 1. Lo borramos físicamente de Cloudflare R2 si existe
+    if (Storage::disk('s3')->exists($item->ruta)) {
+        Storage::disk('s3')->delete($item->ruta);
+    }
+
+    // 2. Lo borramos de la Base de Datos
+    $item->delete();
+
+    return redirect()->route('galeria.index');
+}
 }

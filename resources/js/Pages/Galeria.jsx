@@ -39,12 +39,14 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const OPEN_DATE = new Date('2026-07-11T00:00:00');
     const [timeLeft, setTimeLeft] = useState(null);
 
-    const estaAbiertaParaPruebas = true;
+    // Desactivamos el bypass de pruebas para activar el comportamiento de producción
+    const estaAbiertaParaPruebas = false;
 
     useEffect(() => {
         setGaleria(initialGaleria);
     }, [initialGaleria]);
 
+    // Timer para la cuenta atrás (visible estrictamente para usuarios normales)
     useEffect(() => {
         if (isAdmin || estaAbiertaParaPruebas) return;
 
@@ -93,6 +95,18 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         });
     };
 
+    // Función lógica para gestionar el borrado desde React
+    const handleEliminar = (id, e) => {
+        e.stopPropagation(); // Evita conflictos de apertura del modal en la cuadrícula
+        if (confirm('¿Estás seguro de que quieres eliminar este recuerdo para siempre?')) {
+            router.delete(route('galeria.destroy', id), {
+                onSuccess: () => {
+                    setModalItem(null); // Cierra la visualización si estaba activa
+                }
+            });
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#dce6d4]">
             <NavBar />
@@ -115,7 +129,8 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {(!estaAbiertaParaPruebas && !isAdmin) && (
+            {/* CUENTA ATRÁS: Visible de forma exclusiva para los usuarios normales */}
+            {(!isAdmin) && (
                 <section className="pb-16 px-6 text-center">
                     <div className="max-w-2xl mx-auto bg-white/40 backdrop-blur-sm p-10 rounded-2xl border border-[#9aaa8a]/30 shadow-sm">
                         <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparando algo especial</h2>
@@ -137,11 +152,12 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </section>
             )}
 
-            {(estaAbiertaParaPruebas || isAdmin) && (
+            {/* FORMULARIO DE SUBIDA: Protegido estrictamente solo para el administrador */}
+            {isAdmin && (
                 <section className="pb-16 px-6">
                     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
                         <h2 className="text-xl font-light text-[#556b4e] mb-6 text-center">
-                            {isAdmin ? 'Subir nueva foto (Admin)' : 'Comparte tus fotos de la boda'}
+                            Subir nueva foto (Admin)
                         </h2>
                         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                             <input type="file" onChange={handleArchivoChange} required className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#dce6d4] file:text-[#556b4e] hover:file:bg-[#cedbc4]" />
@@ -175,10 +191,21 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                                     </div>
                                 </div>
                             )}
+
+                            {/* BOTÓN ELIMINAR FLOTANTE: Exclusivo del Administrador */}
+                            {isAdmin && (
+                                <button 
+                                    onClick={(e) => handleEliminar(item.id, e)}
+                                    className="absolute top-2 right-2 bg-red-600/95 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition-colors z-10 text-xs"
+                                    title="Eliminar recuerdo"
+                                >
+                                    🗑️
+                                </button>
+                            )}
                         </div>
                     ))}
 
-                    {/* 2. Elementos estáticos fijados (Ahora con URLs públicas de Cloudflare) */}
+                    {/* 2. Elementos estáticos fijados (Cloudflare) */}
                     {images.map((url, index) => (
                         <div
                             key={`static-${index}`}
@@ -217,14 +244,25 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
 
                         <div className="mt-6 flex flex-wrap justify-center gap-4 w-full">
                             {modalItem.id ? (
-                                <a
-                                    href={route('galeria.download', modalItem.id)}
-                                    className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
-                                >
-                                    <span>📥</span> Descargar original
-                                </a>
+                                <>
+                                    <a
+                                        href={route('galeria.download', modalItem.id)}
+                                        className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
+                                    >
+                                        <span>📥</span> Descargar original
+                                    </a>
+
+                                    {/* BOTÓN ELIMINAR INTERNO: Exclusivo del Administrador */}
+                                    {isAdmin && (
+                                        <button 
+                                            onClick={(e) => handleEliminar(modalItem.id, e)}
+                                            className="bg-red-600 text-white px-8 py-3 rounded-full hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
+                                        >
+                                            <span>🗑️</span> Eliminar Recuerdo
+                                        </button>
+                                    )}
+                                </>
                             ) : (
-                                // Descarga para las fotos estáticas que ahora están en Cloudflare
                                 <a
                                     href={modalItem.url}
                                     download={`muestra-${modalItem.url.split('/').pop()}`}
