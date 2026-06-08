@@ -14,7 +14,11 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const [progress, setProgress] = useState(0);
     const [modalItem, setModalItem] = useState(null);
 
-    // NUEVO: Lista unificada apuntando directamente a las URLs públicas de tu Cloudflare R2
+    // Estados para el modal informativo de descarga nativa en móviles
+    const [mostrarAvisoDescarga, setMostrarAvisoDescarga] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
+
+    // Lista unificada apuntando directamente a las URLs públicas de tu Cloudflare R2
     const images = [
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd074c2aee.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd083c424f.jpg",
@@ -39,8 +43,14 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const OPEN_DATE = new Date('2026-07-11T00:00:00');
     const [timeLeft, setTimeLeft] = useState(null);
 
-    // Desactivamos el bypass de pruebas para activar el comportamiento de producción
     const estaAbiertaParaPruebas = false;
+
+    // Detectar el sistema operativo del dispositivo en la carga inicial
+    useEffect(() => {
+        const checkDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                          (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        setIsIOS(checkDevice);
+    }, []);
 
     useEffect(() => {
         setGaleria(initialGaleria);
@@ -97,11 +107,11 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
 
     // Función lógica para gestionar el borrado desde React
     const handleEliminar = (id, e) => {
-        e.stopPropagation(); // Evita conflictos de apertura del modal en la cuadrícula
+        e.stopPropagation(); 
         if (confirm('¿Estás seguro de que quieres eliminar este recuerdo para siempre?')) {
             router.delete(route('galeria.destroy', id), {
                 onSuccess: () => {
-                    setModalItem(null); // Cierra la visualización si estaba activa
+                    setModalItem(null); 
                 }
             });
         }
@@ -133,7 +143,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             {(!isAdmin) && (
                 <section className="pb-16 px-6 text-center">
                     <div className="max-w-2xl mx-auto bg-white/40 backdrop-blur-sm p-10 rounded-2xl border border-[#9aaa8a]/30 shadow-sm">
-                        <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparando algo especial</h2>
+                        <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparing algo especial</h2>
                         <p className="text-[#7a8a70] mb-8">La posibilidad de subir nuevos recuerdos estará disponible muy pronto.</p>
 
                         {timeLeft ? (
@@ -172,8 +182,8 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
 
             <section className="pb-24">
                 <div className="gallery-grid">
-                    {/* 1. Elementos reales de la base de datos */}
-                    {galeria.map((item) => (
+                    {/* 1. Elementos reales de la base de datos (OCULTOS PARA EL USUARIO, VISIBLES SOLO PARA EL ADMIN) */}
+                    {isAdmin && galeria.map((item) => (
                         <div key={item.id} className="gallery-item group overflow-hidden rounded-lg shadow-sm" onClick={() => setModalItem(item)}>
                             {item.tipo === 'imagen' ? (
                                 <img src={item.url} alt={item.titulo ?? ""} loading="lazy" className="hover:scale-102 transition-transform duration-300" />
@@ -193,19 +203,17 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                             )}
 
                             {/* BOTÓN ELIMINAR FLOTANTE: Exclusivo del Administrador */}
-                            {isAdmin && (
-                                <button 
-                                    onClick={(e) => handleEliminar(item.id, e)}
-                                    className="absolute top-2 right-2 bg-red-600/95 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition-colors z-10 text-xs"
-                                    title="Eliminar recuerdo"
-                                >
-                                    🗑️
-                                </button>
-                            )}
+                            <button 
+                                onClick={(e) => handleEliminar(item.id, e)}
+                                className="absolute top-2 right-2 bg-red-600/95 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition-colors z-10 text-xs"
+                                title="Eliminar recuerdo"
+                            >
+                                🗑️
+                            </button>
                         </div>
                     ))}
 
-                    {/* 2. Elementos estáticos fijados (Cloudflare) */}
+                    {/* 2. Elementos estáticos de muestra en Cloudflare (VISIBLES PARA TODOS: Usuarios y Admin) */}
                     {images.map((url, index) => (
                         <div
                             key={`static-${index}`}
@@ -247,6 +255,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                                 <>
                                     <a
                                         href={route('galeria.download', modalItem.id)}
+                                        onClick={() => setMostrarAvisoDescarga(true)}
                                         className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
                                     >
                                         <span>📥</span> Descargar original
@@ -266,6 +275,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                                 <a
                                     href={modalItem.url}
                                     download={`muestra-${modalItem.url.split('/').pop()}`}
+                                    onClick={() => setMostrarAvisoDescarga(true)}
                                     className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
                                 >
                                     <span>📥</span> Descargar muestra
@@ -279,6 +289,46 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                                 Cerrar
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL INTELIGENTE DE AVISO DE UBICACIÓN DE DESCARGA EN MÓVILES */}
+            {mostrarAvisoDescarga && (
+                <div className="fixed inset-0 z-[10000] bg-black/75 flex items-center justify-center p-6" onClick={() => setMostrarAvisoDescarga(false)}>
+                    <div className="bg-white max-w-sm w-full p-6 rounded-2xl shadow-xl border border-[#9aaa8a]/20 text-center" onClick={e => e.stopPropagation()}>
+                        <span className="text-3xl">🎉</span>
+                        <h3 className="font-serif text-xl text-[#556b4e] mt-3 mb-2 font-semibold">
+                            Descarga iniciada
+                        </h3>
+                        
+                        <div className="text-sm text-gray-600 my-4 text-left bg-[#f4f7f2] p-4 rounded-xl border border-[#dce6d4]">
+                            {isIOS ? (
+                                <>
+                                    <p className="font-semibold text-[#556b4e] mb-1 text-xs">📲 Instrucciones para guardarlo en el carrete (iPhone):</p>
+                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-gray-700">
+                                        <li>El archivo se ha guardado en tu aplicación nativa <strong>"Archivos"</strong> (carpeta Descargas).</li>
+                                        <li>Abre la app "Archivos", selecciona la foto o vídeo.</li>
+                                        <li>Pulsa el botón <strong>Compartir (flecha hacia arriba ⬆️)</strong> en la esquina inferior y elige <strong>"Guardar imagen"</strong> o <strong>"Guardar vídeo"</strong>.</li>
+                                    </ul>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="font-semibold text-[#556b4e] mb-1 text-xs">📲 Dónde está tu archivo (Android):</p>
+                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-gray-700">
+                                        <li>Tu navegador ha guardado el archivo en la carpeta interna de <strong>"Descargas"</strong>.</li>
+                                        <li>Aparecerá directamente en tu aplicación de <strong>Galería</strong> o <strong>Google Fotos</strong> dentro de unos segundos en el álbum "Downloads".</li>
+                                    </ul>
+                                </>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => setMostrarAvisoDescarga(false)}
+                            className="w-full bg-[#6f8352] text-white py-2.5 rounded-xl font-medium hover:bg-[#5a6b43] transition-colors text-sm shadow-sm"
+                        >
+                            ¡Entendido!
+                        </button>
                     </div>
                 </div>
             )}
