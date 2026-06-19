@@ -30,12 +30,9 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd0d543d07.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd0e060e14.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd0e9aab3c.jpg",
-        "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd0f46c242.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd102577e1.jpg",
-        "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd10d1a962.jpg",
-        "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd11cd0f48.jpg",
-        "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_69f2391f38f78.jpg",
-        "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_69f23946a6fa4.jpg"
+        "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd10d1a962.jpg"
+
     ];
 
     const isAdmin = auth?.user?.role === 'admin';
