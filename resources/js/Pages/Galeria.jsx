@@ -18,7 +18,6 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     const [mostrarAvisoDescarga, setMostrarAvisoDescarga] = useState(false);
     const [isIOS, setIsIOS] = useState(false);
 
-    // Lista unificada apuntando directamente a las URLs públicas de tu Cloudflare R2
     const images = [
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd074c2aee.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd083c424f.jpg",
@@ -213,14 +212,15 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                         </div>
                     ))}
 
-                    {/* 2. Elementos estáticos de muestra en Cloudflare (VISIBLES PARA TODOS: Usuarios y Admin) */}
+                    {/* 2. Elementos estáticos de muestra en Cloudflare */}
                     {images.map((url, index) => (
                         <div
                             key={`static-${index}`}
                             className="gallery-item overflow-hidden rounded-lg shadow-sm opacity-90 hover:opacity-100"
                             onClick={() => setModalItem({ url, tipo: 'imagen' })}
                         >
-                            <img src={url} alt="Muestra" loading="lazy" className="hover:scale-102 transition-transform duration-300" />
+                            {/* Cambiado alt="Muestra" por alt="" */}
+                            <img src={url} alt="" loading="lazy" className="hover:scale-102 transition-transform duration-300" />
                         </div>
                     ))}
                 </div>
