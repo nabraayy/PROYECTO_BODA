@@ -139,7 +139,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             {(!isAdmin) && (
                 <section className="pb-16 px-6 text-center">
                     <div className="max-w-2xl mx-auto bg-white/40 backdrop-blur-sm p-10 rounded-2xl border border-[#9aaa8a]/30 shadow-sm">
-                        <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparing algo especial</h2>
+                        <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparando algo especial</h2>
                         <p className="text-[#7a8a70] mb-8">La posibilidad de subir nuevos recuerdos estará disponible muy pronto.</p>
 
                         {timeLeft ? (
