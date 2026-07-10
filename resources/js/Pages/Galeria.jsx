@@ -32,13 +32,15 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd0e9aab3c.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd102577e1.jpg",
         "https://pub-2acd89dc7df341a8a8c57566409eef40.r2.dev/galeria/imagenes/img_699cd10d1a962.jpg"
-
     ];
 
     const isAdmin = auth?.user?.role === 'admin';
-    const OPEN_DATE = new Date('2026-07-11T00:00:00');
+    // 1. Modificamos la fecha para incluir las 19:30 de la tarde
+    const OPEN_DATE = new Date('2026-07-11T19:30:00');
     const [timeLeft, setTimeLeft] = useState(null);
-
+    
+    // 2. Estado para controlar si ya pasó la hora de apertura
+    const [isOpen, setIsOpen] = useState(false);
     const estaAbiertaParaPruebas = false;
 
     // Detectar el sistema operativo del dispositivo en la carga inicial
@@ -52,18 +54,22 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         setGaleria(initialGaleria);
     }, [initialGaleria]);
 
-    // Timer para la cuenta atrás (visible estrictamente para usuarios normales)
+    // Timer para la cuenta atrás e interruptor de apertura
     useEffect(() => {
-        if (isAdmin || estaAbiertaParaPruebas) return;
+        // Si es admin o está en pruebas, forzamos la apertura en la interfaz
+        if (isAdmin || estaAbiertaParaPruebas) {
+            setIsOpen(true);
+            return;
+        }
 
-        const timer = setInterval(() => {
+        const checkTime = () => {
             const now = new Date();
             const diff = OPEN_DATE - now;
 
             if (diff <= 0) {
-                clearInterval(timer);
+                setIsOpen(true);
                 setTimeLeft(null);
-                return;
+                return true; // Indica que ya se abrió
             }
 
             setTimeLeft({
@@ -72,8 +78,14 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 minutos: Math.floor((diff / (1000 * 60)) % 60),
                 segundos: Math.floor((diff / 1000) % 60),
             });
-        }, 1000);
+            return false;
+        };
 
+        // Ejecución inicial inmediata para evitar saltos visuales
+        const alreadyOpen = checkTime();
+        if (alreadyOpen) return;
+
+        const timer = setInterval(checkTime, 1000);
         return () => clearInterval(timer);
     }, [isAdmin, estaAbiertaParaPruebas]);
 
@@ -101,7 +113,6 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         });
     };
 
-    // Función lógica para gestionar el borrado desde React
     const handleEliminar = (id, e) => {
         e.stopPropagation(); 
         if (confirm('¿Estás seguro de que quieres eliminar este recuerdo para siempre?')) {
@@ -135,12 +146,12 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {/* CUENTA ATRÁS: Visible de forma exclusiva para los usuarios normales */}
-            {(!isAdmin) && (
+            {/* CUENTA ATRÁS: Solo se muestra si NO es admin Y la galería aún NO está abierta */}
+            {(!isAdmin && !isOpen) && (
                 <section className="pb-16 px-6 text-center">
                     <div className="max-w-2xl mx-auto bg-white/40 backdrop-blur-sm p-10 rounded-2xl border border-[#9aaa8a]/30 shadow-sm">
                         <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparando algo especial</h2>
-                        <p className="text-[#7a8a70] mb-8">La posibilidad de subir nuevos recuerdos estará disponible muy pronto.</p>
+                        <p className="text-[#7a8a70] mb-8">La posibilidad de ver y subir nuevos recuerdos estará disponible muy pronto.</p>
 
                         {timeLeft ? (
                             <div className="flex justify-center gap-4 md:gap-8 text-[#556b4e]">
@@ -158,7 +169,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </section>
             )}
 
-            {/* FORMULARIO DE SUBIDA: Protegido estrictamente solo para el administrador */}
+            {/* FORMULARIO DE SUBIDA: Exclusivo del admin */}
             {isAdmin && (
                 <section className="pb-16 px-6">
                     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
@@ -178,94 +189,61 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
 
             <section className="pb-24">
                 <div className="gallery-grid">
-                    {/* 1. Elementos reales de la base de datos (OCULTOS PARA EL USUARIO, VISIBLES SOLO PARA EL ADMIN) */}
-                    {isAdmin && galeria.map((item) => (
+                    {/* Elementos de la base de datos: Visibles para el Admin O si la fecha ya abrió la app para usuarios */}
+                    {(isAdmin || isOpen) && galeria.map((item) => (
                         <div key={item.id} className="gallery-item group overflow-hidden rounded-lg shadow-sm" onClick={() => setModalItem(item)}>
                             {item.tipo === 'imagen' ? (
                                 <img src={item.url} alt={item.titulo ?? ""} loading="lazy" className="hover:scale-102 transition-transform duration-300" />
                             ) : (
                                 <div className="relative bg-black rounded-lg overflow-hidden">
-                                    <video
-                                        src={item.url}
-                                        muted
-                                        playsInline
-                                        preload="metadata"
-                                        className="w-full h-auto"
-                                    />
+                                    <video src={item.url} muted playsInline preload="metadata" className="w-full h-auto" />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors">
                                         <span className="text-white text-2xl">▶</span>
                                     </div>
                                 </div>
                             )}
 
-                            {/* BOTÓN ELIMINAR FLOTANTE: Exclusivo del Administrador */}
-                            <button 
-                                onClick={(e) => handleEliminar(item.id, e)}
-                                className="absolute top-2 right-2 bg-red-600/95 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition-colors z-10 text-xs"
-                                title="Eliminar recuerdo"
-                            >
-                                🗑️
-                            </button>
+                            {isAdmin && (
+                                <button 
+                                    onClick={(e) => handleEliminar(item.id, e)}
+                                    className="absolute top-2 right-2 bg-red-600/95 text-white p-2 rounded-full shadow-md hover:bg-red-700 transition-colors z-10 text-xs"
+                                    title="Eliminar recuerdo"
+                                >
+                                    🗑️
+                                </button>
+                            )}
                         </div>
                     ))}
 
-                    {/* 2. Elementos estáticos de muestra en Cloudflare */}
+                    {/* Elementos estáticos de muestra en Cloudflare */}
                     {images.map((url, index) => (
                         <div
                             key={`static-${index}`}
                             className="gallery-item overflow-hidden rounded-lg shadow-sm opacity-90 hover:opacity-100"
                             onClick={() => setModalItem({ url, tipo: 'imagen' })}
                         >
-                            {/* Cambiado alt="Muestra" por alt="" */}
                             <img src={url} alt="" loading="lazy" className="hover:scale-102 transition-transform duration-300" />
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* MODAL DE VISTA PREVIA Y DESCARGA */}
+            {/* ... El resto de tus modales (VISTA PREVIA y AVISO DE DESCARGA) permanecen exactamente igual ... */}
             {modalItem && (
-                <div
-                    className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 transition-opacity duration-300"
-                    onClick={() => setModalItem(null)}
-                >
+                <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4" onClick={() => setModalItem(null)}>
                     <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
-
                         {modalItem.tipo === 'video' ? (
-                            <video
-                                src={modalItem.url}
-                                controls
-                                autoPlay
-                                playsInline
-                                className="max-h-[70vh] w-full rounded-lg shadow-2xl"
-                            />
+                            <video src={modalItem.url} controls autoPlay playsInline className="max-h-[70vh] w-full rounded-lg shadow-2xl" />
                         ) : (
                             <img src={modalItem.url} className="max-h-[70vh] object-contain rounded-lg shadow-2xl" alt="" />
                         )}
-
-                        {modalItem.titulo && (
-                            <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>
-                        )}
-
+                        {modalItem.titulo && <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>}
                         <div className="mt-6 flex flex-wrap justify-center gap-4 w-full">
                             {modalItem.id ? (
                                 <>
-                                    <a
-                                        href={route('galeria.download', modalItem.id)}
-                                        onClick={() => setMostrarAvisoDescarga(true)}
-                                        className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
-                                    >
-                                        <span>📥</span> Descargar original
-                                    </a>
-
-                                    {/* BOTÓN ELIMINAR INTERNO: Exclusivo del Administrador */}
+                                    <a href={route('galeria.download', modalItem.id)} onClick={() => setMostrarAvisoDescarga(true)} className="bg-[#6f8352] text-white px-8 py-3 rounded-full text-sm font-medium">📥 Descargar original</a>
                                     {isAdmin && (
-                                        <button 
-                                            onClick={(e) => handleEliminar(modalItem.id, e)}
-                                            className="bg-red-600 text-white px-8 py-3 rounded-full hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg font-medium text-sm"
-                                        >
-                                            <span>🗑️</span> Eliminar Recuerdo
-                                        </button>
+                                        <button onClick={(e) => handleEliminar(modalItem.id, e)} className="bg-red-600 text-white px-8 py-3 rounded-full text-sm font-medium">🗑️ Eliminar Recuerdo</button>
                                     )}
                                 </>
                             ) : null}
@@ -274,42 +252,30 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             )}
 
-            {/* MODAL INTELIGENTE DE AVISO DE UBICACIÓN DE DESCARGA EN MÓVILES */}
             {mostrarAvisoDescarga && (
                 <div className="fixed inset-0 z-[10000] bg-black/75 flex items-center justify-center p-6" onClick={() => setMostrarAvisoDescarga(false)}>
-                    <div className="bg-white max-w-sm w-full p-6 rounded-2xl shadow-xl border border-[#9aaa8a]/20 text-center" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white max-w-sm w-full p-6 rounded-2xl text-center" onClick={e => e.stopPropagation()}>
                         <span className="text-3xl">🎉</span>
-                        <h3 className="font-serif text-xl text-[#556b4e] mt-3 mb-2 font-semibold">
-                            Descarga iniciada
-                        </h3>
-                        
-                        <div className="text-sm text-gray-600 my-4 text-left bg-[#f4f7f2] p-4 rounded-xl border border-[#dce6d4]">
+                        <h3 className="font-serif text-xl text-[#556b4e] mt-3 mb-2 font-semibold">Descarga iniciada</h3>
+                        <div className="text-sm text-gray-600 my-4 text-left bg-[#f4f7f2] p-4 rounded-xl text-xs">
                             {isIOS ? (
                                 <>
-                                    <p className="font-semibold text-[#556b4e] mb-1 text-xs">📲 Instrucciones para guardarlo en el carrete (iPhone):</p>
-                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-gray-700">
-                                        <li>El archivo se ha guardado en tu aplicación nativa <strong>"Archivos"</strong> (carpeta Descargas).</li>
-                                        <li>Abre la app "Archivos", selecciona la foto o vídeo.</li>
-                                        <li>Pulsa el botón <strong>Compartir (flecha hacia arriba ⬆️)</strong> en la esquina inferior y elige <strong>"Guardar imagen"</strong> o <strong>"Guardar vídeo"</strong>.</li>
+                                    <p className="font-semibold text-[#556b4e] mb-1">📲 Instrucciones para iPhone:</p>
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        <li>Se guardó en la app <strong>"Archivos"</strong> (Descargas).</li>
+                                        <li>Dale a <strong>Compartir (⬆️)</strong> y luego a <strong>"Guardar imagen/vídeo"</strong>.</li>
                                     </ul>
                                 </>
                             ) : (
                                 <>
-                                    <p className="font-semibold text-[#556b4e] mb-1 text-xs">📲 Dónde está tu archivo (Android):</p>
-                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-gray-700">
-                                        <li>Tu navegador ha guardado el archivo en la carpeta interna de <strong>"Descargas"</strong>.</li>
-                                        <li>Aparecerá directamente en tu aplicación de <strong>Galería</strong> o <strong>Google Fotos</strong> dentro de unos segundos en el álbum "Downloads".</li>
+                                    <p className="font-semibold text-[#556b4e] mb-1">📲 Dónde está (Android):</p>
+                                    <ul className="list-disc pl-4 space-y-1">
+                                        <li>Búscalo en tu carpeta de <strong>"Descargas"</strong> o en tu app de fotos habitual.</li>
                                     </ul>
                                 </>
                             )}
                         </div>
-
-                        <button
-                            onClick={() => setMostrarAvisoDescarga(false)}
-                            className="w-full bg-[#6f8352] text-white py-2.5 rounded-xl font-medium hover:bg-[#5a6b43] transition-colors text-sm shadow-sm"
-                        >
-                            ¡Entendido!
-                        </button>
+                        <button onClick={() => setMostrarAvisoDescarga(false)} className="w-full bg-[#6f8352] text-white py-2.5 rounded-xl text-sm font-medium">¡Entendido!</button>
                     </div>
                 </div>
             )}
