@@ -35,11 +35,11 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
     ];
 
     const isAdmin = auth?.user?.role === 'admin';
-    // 1. Modificamos la fecha para incluir las 19:30 de la tarde
+    // Fecha y hora acordada de apertura (11/07/2026 a las 19:30)
     const OPEN_DATE = new Date('2026-07-11T19:30:00');
     const [timeLeft, setTimeLeft] = useState(null);
     
-    // 2. Estado para controlar si ya pasó la hora de apertura
+    // Estado dinámico que controla si la galería ya está abierta para el público
     const [isOpen, setIsOpen] = useState(false);
     const estaAbiertaParaPruebas = false;
 
@@ -54,9 +54,8 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
         setGaleria(initialGaleria);
     }, [initialGaleria]);
 
-    // Timer para la cuenta atrás e interruptor de apertura
+    // Timer para la cuenta atrás e interruptor de apertura en tiempo real
     useEffect(() => {
-        // Si es admin o está en pruebas, forzamos la apertura en la interfaz
         if (isAdmin || estaAbiertaParaPruebas) {
             setIsOpen(true);
             return;
@@ -69,7 +68,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             if (diff <= 0) {
                 setIsOpen(true);
                 setTimeLeft(null);
-                return true; // Indica que ya se abrió
+                return true; 
             }
 
             setTimeLeft({
@@ -81,7 +80,6 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
             return false;
         };
 
-        // Ejecución inicial inmediata para evitar saltos visuales
         const alreadyOpen = checkTime();
         if (alreadyOpen) return;
 
@@ -146,12 +144,12 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {/* CUENTA ATRÁS: Solo se muestra si NO es admin Y la galería aún NO está abierta */}
+            {/* CUENTA ATRÁS: Visible para usuarios normales SOLO si todavía no se ha cumplido el plazo */}
             {(!isAdmin && !isOpen) && (
                 <section className="pb-16 px-6 text-center">
                     <div className="max-w-2xl mx-auto bg-white/40 backdrop-blur-sm p-10 rounded-2xl border border-[#9aaa8a]/30 shadow-sm">
                         <h2 className="font-serif text-3xl text-[#556b4e] mb-4">Estamos preparando algo especial</h2>
-                        <p className="text-[#7a8a70] mb-8">La posibilidad de ver y subir nuevos recuerdos estará disponible muy pronto.</p>
+                        <p className="text-[#7a8a70] mb-8">La posibilidad de subir nuevos recuerdos estará disponible muy pronto.</p>
 
                         {timeLeft ? (
                             <div className="flex justify-center gap-4 md:gap-8 text-[#556b4e]">
@@ -169,27 +167,25 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </section>
             )}
 
-            {/* FORMULARIO DE SUBIDA: Exclusivo del admin */}
-            {isAdmin && (
-                <section className="pb-16 px-6">
-                    <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
-                        <h2 className="text-xl font-light text-[#556b4e] mb-6 text-center">
-                            Subir nueva foto (Admin)
-                        </h2>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                            <input type="file" onChange={handleArchivoChange} required className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#dce6d4] file:text-[#556b4e] hover:file:bg-[#cedbc4]" />
-                            <input type="text" placeholder="Título o dedicatoria (opcional)" value={titulo} onChange={e => setTitulo(e.target.value)} className="p-2 border rounded" />
-                            <button disabled={uploading} className="bg-[#6f8352] text-white py-2 rounded font-medium hover:bg-[#5a6b43] transition-colors">
-                                {uploading ? `Subiendo ${Math.round(progress)}%` : 'Publicar recuerdo'}
-                            </button>
-                        </form>
-                    </div>
-                </section>
-            )}
+            {/* FORMULARIO DE SUBIDA: Ahora disponible para todos los usuarios */}
+            <section className="pb-16 px-6">
+                <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
+                    <h2 className="text-xl font-light text-[#556b4e] mb-6 text-center">
+                        Subir nueva foto o recuerdo
+                    </h2>
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <input type="file" onChange={handleArchivoChange} required className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:bg-[#dce6d4] file:text-[#556b4e] hover:file:bg-[#cedbc4]" />
+                        <input type="text" placeholder="Título o dedicatoria (opcional)" value={titulo} onChange={e => setTitulo(e.target.value)} className="p-2 border rounded" />
+                        <button disabled={uploading} className="bg-[#6f8352] text-white py-2 rounded font-medium hover:bg-[#5a6b43] transition-colors">
+                            {uploading ? `Subiendo ${Math.round(progress)}%` : 'Publicar recuerdo'}
+                        </button>
+                    </form>
+                </div>
+            </section>
 
             <section className="pb-24">
                 <div className="gallery-grid">
-                    {/* Elementos de la base de datos: Visibles para el Admin O si la fecha ya abrió la app para usuarios */}
+                    {/* Elementos de la base de datos: Visibles para el Admin O si la galería ya está abierta para los usuarios */}
                     {(isAdmin || isOpen) && galeria.map((item) => (
                         <div key={item.id} className="gallery-item group overflow-hidden rounded-lg shadow-sm" onClick={() => setModalItem(item)}>
                             {item.tipo === 'imagen' ? (
@@ -203,6 +199,7 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                                 </div>
                             )}
 
+                            {/* BOTÓN ELIMINAR FLOTANTE: Exclusivo del Administrador */}
                             {isAdmin && (
                                 <button 
                                     onClick={(e) => handleEliminar(item.id, e)}
@@ -228,22 +225,32 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             </section>
 
-            {/* ... El resto de tus modales (VISTA PREVIA y AVISO DE DESCARGA) permanecen exactamente igual ... */}
+            {/* MODAL DE VISTA PREVIA Y DESCARGA */}
             {modalItem && (
-                <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4" onClick={() => setModalItem(null)}>
+                <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-4 transition-opacity duration-300" onClick={() => setModalItem(null)}>
                     <div className="relative max-w-5xl w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
                         {modalItem.tipo === 'video' ? (
                             <video src={modalItem.url} controls autoPlay playsInline className="max-h-[70vh] w-full rounded-lg shadow-2xl" />
                         ) : (
                             <img src={modalItem.url} className="max-h-[70vh] object-contain rounded-lg shadow-2xl" alt="" />
                         )}
-                        {modalItem.titulo && <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>}
+
+                        {modalItem.titulo && (
+                            <p className="text-white mt-4 font-serif text-xl italic">"{modalItem.titulo}"</p>
+                        )}
+
                         <div className="mt-6 flex flex-wrap justify-center gap-4 w-full">
                             {modalItem.id ? (
                                 <>
-                                    <a href={route('galeria.download', modalItem.id)} onClick={() => setMostrarAvisoDescarga(true)} className="bg-[#6f8352] text-white px-8 py-3 rounded-full text-sm font-medium">📥 Descargar original</a>
+                                    <a href={route('galeria.download', modalItem.id)} onClick={() => setMostrarAvisoDescarga(true)} className="bg-[#6f8352] text-white px-8 py-3 rounded-full hover:bg-[#5a6b43] transition-colors flex items-center gap-2 shadow-lg font-medium text-sm">
+                                        <span>📥</span> Descargar original
+                                    </a>
+
+                                    {/* BOTÓN ELIMINAR INTERNO: Exclusivo del Administrador */}
                                     {isAdmin && (
-                                        <button onClick={(e) => handleEliminar(modalItem.id, e)} className="bg-red-600 text-white px-8 py-3 rounded-full text-sm font-medium">🗑️ Eliminar Recuerdo</button>
+                                        <button onClick={(e) => handleEliminar(modalItem.id, e)} className="bg-red-600 text-white px-8 py-3 rounded-full hover:bg-red-700 transition-colors flex items-center gap-2 shadow-lg font-medium text-sm">
+                                            <span>🗑️</span> Eliminar Recuerdo
+                                        </button>
                                     )}
                                 </>
                             ) : null}
@@ -252,30 +259,37 @@ export default function Galeria({ galeria: initialGaleria = [], auth }) {
                 </div>
             )}
 
+            {/* MODAL INTELIGENTE DE AVISO DE UBICACIÓN DE DESCARGA EN MÓVILES */}
             {mostrarAvisoDescarga && (
                 <div className="fixed inset-0 z-[10000] bg-black/75 flex items-center justify-center p-6" onClick={() => setMostrarAvisoDescarga(false)}>
-                    <div className="bg-white max-w-sm w-full p-6 rounded-2xl text-center" onClick={e => e.stopPropagation()}>
+                    <div className="bg-white max-w-sm w-full p-6 rounded-2xl shadow-xl border border-[#9aaa8a]/20 text-center" onClick={e => e.stopPropagation()}>
                         <span className="text-3xl">🎉</span>
                         <h3 className="font-serif text-xl text-[#556b4e] mt-3 mb-2 font-semibold">Descarga iniciada</h3>
-                        <div className="text-sm text-gray-600 my-4 text-left bg-[#f4f7f2] p-4 rounded-xl text-xs">
+                        
+                        <div className="text-sm text-gray-600 my-4 text-left bg-[#f4f7f2] p-4 rounded-xl border border-[#dce6d4]">
                             {isIOS ? (
                                 <>
-                                    <p className="font-semibold text-[#556b4e] mb-1">📲 Instrucciones para iPhone:</p>
-                                    <ul className="list-disc pl-4 space-y-1">
-                                        <li>Se guardó en la app <strong>"Archivos"</strong> (Descargas).</li>
-                                        <li>Dale a <strong>Compartir (⬆️)</strong> y luego a <strong>"Guardar imagen/vídeo"</strong>.</li>
+                                    <p className="font-semibold text-[#556b4e] mb-1 text-xs">📲 Instrucciones para guardarlo en el carrete (iPhone):</p>
+                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-gray-700">
+                                        <li>El archivo se ha guardado en tu aplicación nativa <strong>"Archivos"</strong> (carpeta Descargas).</li>
+                                        <li>Abre la app "Archivos", selecciona la foto o vídeo.</li>
+                                        <li>Pulsa el botón <strong>Compartir (flecha hacia arriba ⬆️)</strong> en la esquina inferior y elige <strong>"Guardar imagen"</strong> o <strong>"Guardar vídeo"</strong>.</li>
                                     </ul>
                                 </>
                             ) : (
                                 <>
-                                    <p className="font-semibold text-[#556b4e] mb-1">📲 Dónde está (Android):</p>
-                                    <ul className="list-disc pl-4 space-y-1">
-                                        <li>Búscalo en tu carpeta de <strong>"Descargas"</strong> o en tu app de fotos habitual.</li>
+                                    <p className="font-semibold text-[#556b4e] mb-1 text-xs">📲 Dónde está tu archivo (Android):</p>
+                                    <ul className="list-disc pl-4 space-y-1.5 text-xs text-gray-700">
+                                        <li>Tu navegador ha guardado el archivo en la carpeta interna de <strong>"Descargas"</strong>.</li>
+                                        <li>Aparecerá directamente en tu aplicación de <strong>Galería</strong> o <strong>Google Fotos</strong> dentro de unos segundos en el álbum "Downloads".</li>
                                     </ul>
                                 </>
                             )}
                         </div>
-                        <button onClick={() => setMostrarAvisoDescarga(false)} className="w-full bg-[#6f8352] text-white py-2.5 rounded-xl text-sm font-medium">¡Entendido!</button>
+
+                        <button onClick={() => setMostrarAvisoDescarga(false)} className="w-full bg-[#6f8352] text-white py-2.5 rounded-xl font-medium hover:bg-[#5a6b43] transition-colors text-sm shadow-sm">
+                            ¡Entendido!
+                        </button>
                     </div>
                 </div>
             )}
